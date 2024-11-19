@@ -4,6 +4,7 @@ const axios = require('axios')
 const TelegramBot = require('node-telegram-bot-api')
 
 const rssParser = require('./src/utils/rssParser')
+const logger = require('./src/middleware/logger')
 
 require('dotenv').config();
 
@@ -39,10 +40,14 @@ bot.setMyCommands([
     { command: '/full', description: 'Get the full news feed' }
 ]);
 
-
+// Log all errors
 bot.on('polling_error', (error) => {
     console.error('Polling Error:', error);  // Log the full error object
 });
+
+bot.on('message', (msg) =>{
+    logger.logUserInteraction(msg);
+})
 
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
