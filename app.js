@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const axios = require('axios')
 const TelegramBot = require('node-telegram-bot-api')
 
-const rssParser = require('./utils/rssParser')
+const rssParser = require('./src/utils/rssParser')
 
 require('dotenv').config();
 
