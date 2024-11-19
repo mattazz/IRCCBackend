@@ -31,16 +31,45 @@ if (!token) {
 
 const bot = new TelegramBot(token, { polling: true })
 
+// Set up command menu
+bot.setMyCommands([
+    { command: '/help', description: 'Get the bot commands' },
+    { command: '/latest', description: 'Get the latest news' },
+    { command: '/month', description: 'Get news for a specific month (e.g., /month January)' },
+    { command: '/full', description: 'Get the full news feed' }
+]);
+
+
 bot.on('polling_error', (error) => {
     console.error('Polling Error:', error);  // Log the full error object
 });
+
+bot.onText(/\/help/, (msg) => {
+    const chatId = msg.chat.id;
+    const introMessage = `
+    Here are some commands you can use:
+    
+    - /help - List down all the possible commands
+    - /latest - Get the latest news
+    - /month [month] - Get news for a specific month (e.g., /month January)
+    - /full - Get the full news feed
+    `;
+    bot.sendMessage(chatId, introMessage);
+});
+
+
+bot.onText("/month", (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
+})
+
 
 bot.onText(/\/month (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const input = match[1]; //captured regex response
 
-    console.log(`regex response: ${input}`);
-    
+    console.log(`User${chatId} action - /month : ${input}`);
+
     try {
         input_month = rssParser.validateUserMonthInput(input, "string");
 
@@ -50,7 +79,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
         if (feedMessage.length === 0) {
             bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
-        } else{
+        } else {
             bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
         }
 
@@ -59,14 +88,15 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
             bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
         });
     } catch (error) {
-        bot.sendMessage(chatId, "Please enter a valid month (e.g., January, February, March, etc.)");
+        bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
         console.error("Error onText: " + error.stack);
     }
 });
 
 bot.onText("/latest", async (msg) => {
     const chatId = msg.chat.id;
-    
+    console.log(`User${chatId} action - /latest`);
+
     try {
         // get latest month
         input_month = new Date().toLocaleString('default', { month: 'long' });
@@ -77,7 +107,7 @@ bot.onText("/latest", async (msg) => {
         if (feedMessage.length === 0) {
             bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
-        } else{
+        } else {
             bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
         }
 
@@ -92,8 +122,10 @@ bot.onText("/latest", async (msg) => {
 });
 
 
-bot.onText(/\/full (.+)/,async (msg) => {
+bot.onText(/\/full (.+)/, async (msg) => {
     const chatId = msg.chat.id;
+
+    console.log(`User${chatId} action - /full`);
     // Fetch RSS Feed
     try {
         let feedResult = await rssParser.fetchFullIRCCFeed();
@@ -102,10 +134,10 @@ bot.onText(/\/full (.+)/,async (msg) => {
 
         // Send Message, iterate and send one message per item
         feedMessage.forEach(item => {
-            bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate)  + "\n" + item.link);
+            bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
         })
 
-        
+
     } catch (error) {
         bot.sendMessage(chatId, "Error fetching feed: " + error.message);
         console.error("Error fetching feed: " + error.message);
