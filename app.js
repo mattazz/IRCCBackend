@@ -55,8 +55,7 @@ Stay up-to-date with the latest Immigration, Refugees, and Citizenship Canada (I
     - /help - List down all the possible commands
     - /latest - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed
-;`
+    - /full - Get the full news feed`
     bot.sendMessage(chatId, introMessage);
 });
 
@@ -68,8 +67,7 @@ bot.onText(/\/help/, (msg) => {
     - /help - List down all the possible commands
     - /latest - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed
-    `;
+    - /full - Get the full news feed`
     bot.sendMessage(chatId, introMessage);
 });
 
