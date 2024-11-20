@@ -6,6 +6,8 @@ const TelegramBot = require('node-telegram-bot-api')
 const rssParser = require('./src/utils/rssParser')
 const logger = require('./src/middleware/logger')
 const irccDrawScraper = require('./src/utils/irccDrawScraper')
+const chartGenerator = require('./src/utils/chartGenerator')
+const irccDrawAnalyzer = require('./src/utils/irccDrawAnalyzer')
 
 require('dotenv').config();
 
@@ -35,7 +37,7 @@ if (!token) {
     process.exit(1)
 }
 
-const url = process.env.APP_URL || 'https://afternoon-crag-31332-056085fc3d15.herokuapp.com/';
+const url = process.env.DEV_URL || 'https://afternoon-crag-31332-056085fc3d15.herokuapp.com/';
 const webhookPath = process.env.WEBHOOK_PATH || '/webhook';
 const bot = new TelegramBot(token, { webHook: true })
 
@@ -229,7 +231,15 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
         let drawData = await irccDrawScraper.parseDraws(input);
         for (const draw of drawData) {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
+
         }
+        // Analyze draws 
+        let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
+        let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
+
+        // Send message and photo
+        bot.sendMessage(chatId,`Hey there! I analyzed the last ${drawData.length-1} draws from ${drawData[0].date} to ${drawData[drawData.length - 1].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
+        bot.sendPhoto(chatId, img_buffer);
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
         console.error("Error fetching draw data: " + error.message);
@@ -242,10 +252,19 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     logger.logUserInteraction(msg);
 
     try {
-        let drawData = await irccDrawScraper.filterDraws(filterCode);
+        let drawData = await irccDrawScraper.filterDraws(filterCode, 20);
         for (const draw of drawData) {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
         }
+
+        // Analyze draws 
+        let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
+        let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
+
+        // Send message and photo
+        bot.sendMessage(chatId,`Hey there! I analyzed the last ${drawData.length-1} draws from ${drawData[0].date} to ${drawData[drawData.length - 1].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
+        bot.sendPhoto(chatId, img_buffer);
+        
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
         console.error("Error fetching draw data: " + error.message);

@@ -50,8 +50,15 @@ const parseDraws = async (max_draw = 5) =>{
     return parsedDrawArray
 }
 
-const filterDraws =async (filter = "CEC") =>{
-    const parsedDraws = await parseDraws(10);
+/**
+ * Filters the draws based on the specified filter and returns the last 10 draws.
+ * 
+ * @param {*} filter String filter to apply to the draws.
+ * @param {*} max_num  Maximum number of draws to return.
+ * @returns 
+ */
+const filterDraws =async (filter = "CEC", max_num = 10) =>{
+    const parsedDraws = await parseDraws(max_num);
 
     classFilterMap = {
         "CEC": "Canadian Experience Class",
