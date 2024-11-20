@@ -37,7 +37,7 @@ if (!token) {
     process.exit(1)
 }
 
-const url = process.env.DEV_URL || 'https://afternoon-crag-31332-056085fc3d15.herokuapp.com/';
+const url = process.env.APP_URL || 'https://afternoon-crag-31332-056085fc3d15.herokuapp.com/';
 const webhookPath = process.env.WEBHOOK_PATH || '/webhook';
 const bot = new TelegramBot(token, { webHook: true })
 
