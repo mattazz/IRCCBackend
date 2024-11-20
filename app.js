@@ -130,8 +130,14 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
             await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
-        await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
-        console.error("Error onText: " + error.stack);
+        if(error.message === "Invalid Month"){
+            await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
+            return
+        } else{
+            console.error("Error fetching feed: " + error.message);
+            await bot.sendMessage(chatId, "Error fetching feed: " + error.message);
+        }
+        
     }
 });
 
