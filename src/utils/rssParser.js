@@ -2,7 +2,6 @@ const axios = require('axios')
 const Parser = require('rss-parser')
 
 
-
 const irccNewsURL = "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=departmentofcitizenshipandimmigration&sort=publishedDate&orderBy=desc&publishedDate%3E=2021-07-23&pick=50&format=atom&atomtitle=Immigration,%20Refugees%20and%20Citizenship%20Canada"
 // Month mapping
 const monthMapping = {
@@ -20,7 +19,11 @@ const monthMapping = {
     dec: 11, december: 11
 };
 
-// fetch feed
+/**
+ * Fetches the full IRCC news feed from the specified URL.
+ * 
+ * @returns {Promise<Object>} The full IRCC news feed.
+ */
 async function fetchFullIRCCFeed() {
     let parser = new Parser();
     let feed = await parser.parseURL(irccNewsURL);
@@ -34,6 +37,13 @@ async function fetchFullIRCCFeed() {
     
 }
 
+/**
+ * Validates the user input for the month and returns the month number or month string.
+ * 
+ * @param {*} input_month String input for the month.
+ * @param {*} returnType [String or Number]. Default is number.
+ * @returns  The month number or month string.
+ */
 function validateUserMonthInput(input_month, returnType = "number"){
     let input_month_lower = input_month.toLowerCase();
     let input_month_num = monthMapping[input_month_lower];
@@ -48,6 +58,12 @@ function validateUserMonthInput(input_month, returnType = "number"){
     }
 }
 
+/**
+ * Fetches the IRCC news feed for the specified month.
+ * 
+ * @param {*} input_month The month to filter the news feed.
+ * @returns {Promise<Array>} An array of objects containing the news feed for the specified month.
+ */
 async function fetchIRCCFeed_Monthly(input_month){
     let parser = new Parser
     let feed = await fetchFullIRCCFeed();
@@ -66,7 +82,12 @@ async function fetchIRCCFeed_Monthly(input_month){
     return monthlyItems
 }
 
-
+/**
+ * Formats the date string to a more readable format.
+ * 
+ * @param {*} dateString The date string to format.
+ * @returns {String} The formatted date string.
+ */
 function formatDate(dateString){
     const date = new Date(dateString);
     const options = {year: "numeric", month: 'long', day: 'numeric'};
