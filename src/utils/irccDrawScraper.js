@@ -51,7 +51,7 @@ const parseDraws = async (max_draw = 5) =>{
 }
 
 const filterDraws =async (filter = "CEC") =>{
-    const parsedDraws = await parseDraws(50);
+    const parsedDraws = await parseDraws(10);
 
     classFilterMap = {
         "CEC": "Canadian Experience Class",

@@ -89,9 +89,8 @@ bot.onText(/\/start/, (msg) => {
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
-    - /draws [number] - Get the last [number] IRCC draws`
-
-    
+    - /draws [number] - Get the last [number] IRCC draws
+    - /filter_draws [class] - Filter draws by class and shows the last 10 draws (e.g., /filter_draws CEC)`
 
     bot.sendMessage(chatId, introMessage);
 });
@@ -109,7 +108,8 @@ bot.onText(/\/help/, (msg) => {
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
-    - /draws [number] - Get the last [number] IRCC draws`
+    - /draws [number] - Get the last [number] IRCC draws
+    - /filter_draws [class] - Filter draws by class and shows the last 10 draws (e.g., /filter_draws CEC)`
 
     bot.sendMessage(chatId, introMessage);
 });
