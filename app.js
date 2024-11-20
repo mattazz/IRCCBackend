@@ -113,18 +113,18 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
         let feedMessage = await rssParser.fetchIRCCFeed_Monthly(input_month);
 
         if (feedMessage.length === 0) {
-            bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
+            await bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
         } else {
-            bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
+            await bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
         }
 
         // Send Message, iterate and send one message per item
-        feedMessage.forEach(item => {
-            bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
-        });
+        for (const item of feedMessage) {
+            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+        }
     } catch (error) {
-        bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
+        await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
         console.error("Error onText: " + error.stack);
     }
 });
@@ -140,18 +140,18 @@ bot.onText("/latest", async (msg) => {
         let feedMessage = await rssParser.fetchIRCCFeed_Monthly(input_month);
 
         if (feedMessage.length === 0) {
-            bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
+            await bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
         } else {
-            bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
+            await bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
         }
 
         // Send Message, iterate and send one message per item
-        feedMessage.forEach(item => {
-            bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
-        });
+        for (const item of feedMessage) {
+            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+        }
     } catch (error) {
-        bot.sendMessage(chatId, `Error fetching feed for the month of ${input_month} ${new Date().getFullYear()}`);
+        await bot.sendMessage(chatId, `Error fetching feed for the month of ${input_month} ${new Date().getFullYear()}`);
         console.error("Error onText: " + error.stack);
     }
 });
@@ -164,16 +164,12 @@ bot.onText(/\/full (.+)/, async (msg) => {
     try {
         let feedResult = await rssParser.fetchFullIRCCFeed();
         let feedMessage = feedResult.items
-
-
         // Send Message, iterate and send one message per item
-        feedMessage.forEach(item => {
-            bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
-        })
-
-
+        for (const item of feedMessage) {
+            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate)  + "\n" + item.link);
+        }
     } catch (error) {
-        bot.sendMessage(chatId, "Error fetching feed: " + error.message);
+        await bot.sendMessage(chatId, "Error fetching feed: " + error.message);
         console.error("Error fetching feed: " + error.message);
     }
 })
