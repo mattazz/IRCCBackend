@@ -106,8 +106,14 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const input = match[1]; //captured regex response
     logger.logUserInteraction(msg);
+
+    if(!input){
+        await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
+        return
+    }
+
     try {
-        input_month = rssParser.validateUserMonthInput(input, "string");
+        const input_month = rssParser.validateUserMonthInput(input, "string");
 
         // Fetch RSS Feed
         let feedMessage = await rssParser.fetchIRCCFeed_Monthly(input_month);
