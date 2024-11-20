@@ -17,6 +17,10 @@ const createChartForRolling = async (chat_id, bot_token, analyzedData = null) =>
         analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
     }
 
+    // Sort the analyzedData by date
+    analyzedData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+
     // Create the chart
     const chart = new ChartJsImage();
 
@@ -40,7 +44,7 @@ const createChartForRolling = async (chat_id, bot_token, analyzedData = null) =>
         }
     })
 
-    
+
 
     chart.setWidth(600);
     chart.setHeight(400);
