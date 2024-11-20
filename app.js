@@ -30,8 +30,16 @@ if (!token) {
     process.exit(1)
 }
 
-const bot = new TelegramBot(token, { polling: true })
+const url = process.env.APP_URL || 'https://afternoon-crag-31332-056085fc3d15.herokuapp.com/';
+const webhookPath = process.env.WEBHOOK_PATH || '/webhook';
+const bot = new TelegramBot(token, { webHook: true })
 
+bot.setWebHook(`https://ac48-70-27-186-84.ngrok-free.app/webhook`);
+
+app.post('/webhook', (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+})
 // Set up command menu
 bot.setMyCommands([
     { command: '/help', description: 'Get the bot commands' },
@@ -41,12 +49,19 @@ bot.setMyCommands([
 ]);
 
 // Log all errors
-bot.on('polling_error', (error) => {
-    console.error('Polling Error:', error);  // Log the full error object
+bot.on('webhook_error', (error) => {
+    console.error('Webhook Error:', error);  // Log the full error object
 });
 
 bot.on('message', (msg) =>{
     logger.logUserInteraction(msg);
+})
+
+app.post(webhookPath, (req, res) => {
+    bot.processUpdate(req.body);
+    console.log(req.body);
+    
+    res.sendStatus(200);
 })
 
 bot.onText(/\/start/, (msg) => {
@@ -86,9 +101,7 @@ bot.onText("/month", (msg) => {
 bot.onText(/\/month (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const input = match[1]; //captured regex response
-
-    console.log(`User${chatId} action - /month : ${input}`);
-
+    logger.logUserInteraction(msg);
     try {
         input_month = rssParser.validateUserMonthInput(input, "string");
 
@@ -114,8 +127,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
 
 bot.onText("/latest", async (msg) => {
     const chatId = msg.chat.id;
-    console.log(`User${chatId} action - /latest`);
-
+    logger.logUserInteraction(msg);
     try {
         // get latest month
         input_month = new Date().toLocaleString('default', { month: 'long' });
@@ -143,8 +155,7 @@ bot.onText("/latest", async (msg) => {
 
 bot.onText(/\/full (.+)/, async (msg) => {
     const chatId = msg.chat.id;
-
-    console.log(`User${chatId} action - /full`);
+    logger.logUserInteraction(msg);
     // Fetch RSS Feed
     try {
         let feedResult = await rssParser.fetchFullIRCCFeed();
