@@ -76,13 +76,22 @@ bot.onText(/\/start/, (msg) => {
     const introMessage = `
     Welcome to the IRCC News Bot! 🤖🇨🇦
 
-Stay up-to-date with the latest Immigration, Refugees, and Citizenship Canada (IRCC) news and updates. 
+    Stay up-to-date with the latest Immigration, Refugees, and Citizenship Canada (IRCC) news and updates. 
 
     Here are some commands you can use:
     - /help - List down all the possible commands
+
+    News: 
     - /latest - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed`
+    - /full - Get the full news feed
+
+    Draws:
+    - /last_draws - Get the last 5 IRCC draws
+    - /draws [number] - Get the last [number] IRCC draws`
+
+    
+
     bot.sendMessage(chatId, introMessage);
 });
 
@@ -90,11 +99,17 @@ bot.onText(/\/help/, (msg) => {
     const chatId = msg.chat.id;
     const introMessage = `
     🤖🇨🇦 Here are some commands you can use:
-
     - /help - List down all the possible commands
+
+    News: 
     - /latest - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed`
+    - /full - Get the full news feed
+
+    Draws:
+    - /last_draws - Get the last 5 IRCC draws
+    - /draws [number] - Get the last [number] IRCC draws`
+
     bot.sendMessage(chatId, introMessage);
 });
 
