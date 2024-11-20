@@ -5,6 +5,7 @@ const TelegramBot = require('node-telegram-bot-api')
 
 const rssParser = require('./src/utils/rssParser')
 const logger = require('./src/middleware/logger')
+const irccDrawScraper = require('./src/utils/irccDrawScraper')
 
 require('dotenv').config();
 
@@ -183,5 +184,20 @@ bot.onText(/\/full (.+)/, async (msg) => {
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching feed: " + error.message);
         console.error("Error fetching feed: " + error.message);
+    }
+})
+
+bot.onText("/draws", async (msg) => {
+    const chatId = msg.chat.id;
+    logger.logUserInteraction(msg);
+    
+    try {
+        let drawData = await irccDrawScraper.parseDraws(5);
+        for (const draw of drawData) {
+            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\nCRS: ${draw.crs}\nClass: ${draw.class}\nDraw Size: ${draw.drawSize}`);
+        }
+    } catch (error) {
+        await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
+        console.error("Error fetching draw data: " + error.message);
     }
 })
