@@ -92,7 +92,14 @@ bot.onText(/\/start/, (msg) => {
     Draws:
     - /last_draws - Get the last 5 IRCC draws
     - /draws [number] - Get the last [number] IRCC draws
-    - /filter_draws [class] - Filter draws by class and shows the last 10 draws (e.g., /filter_draws CEC)`
+    - /filter_draws [class] - Filter draws by class and shows the last 10 draws (e.g., /filter_draws CEC)
+    
+    Filter Draw codes: 
+    "CEC" - Canadian Experience Class
+    "FSW" - Federal Skilled Worker
+    "FST" - Federal Skilled Trades
+    "PNP" - Provincial Nominee Program
+    `
 
     bot.sendMessage(chatId, introMessage);
 });
@@ -111,7 +118,13 @@ bot.onText(/\/help/, (msg) => {
     Draws:
     - /last_draws - Get the last 5 IRCC draws
     - /draws [number] - Get the last [number] IRCC draws
-    - /filter_draws [class] - Filter draws by class and shows the last 10 draws (e.g., /filter_draws CEC)`
+    - /filter_draws [class] - Filter draws by class and shows the last 10 draws (e.g., /filter_draws CEC)
+    
+    Filter Draw codes: 
+    "CEC" - Canadian Experience Class
+    "FSW" - Federal Skilled Worker
+    "FST" - Federal Skilled Trades
+    "PNP" - Provincial Nominee Program`
 
     bot.sendMessage(chatId, introMessage);
 });
@@ -233,13 +246,6 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
 
         }
-        // Analyze draws 
-        let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
-        let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
-
-        // Send message and photo
-        bot.sendMessage(chatId,`Hey there! I analyzed the last ${drawData.length-1} draws from ${drawData[0].date} to ${drawData[drawData.length - 1].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
-        bot.sendPhoto(chatId, img_buffer);
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
         console.error("Error fetching draw data: " + error.message);
