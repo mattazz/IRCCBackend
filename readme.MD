@@ -28,7 +28,7 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 
 # Todo
 ## Logs
-- [ ] Add creation of local log files for metrics tracking (Daily log files in a log folder)
+- [x] Add creation of local log files for metrics tracking (Daily log files in a log folder) -> Function is there, but can't log in heroku without using add-ons or something like AWS S3
   
 ## Draws
 - [x] Consider changing from polling to webhook for lower server usage
