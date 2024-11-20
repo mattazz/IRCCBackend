@@ -36,3 +36,7 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
   
 ## News
 - [ ] Add press meeting news and other relevant news
+
+## Chart
+- [ ] Improve chart headline to include specific draw class
+- [ ] Improve styling of chart (red primary color)
