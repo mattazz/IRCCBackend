@@ -27,6 +27,8 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 
 
 # Todo
+## Logs
+- [ ] Add creation of local log files for metrics tracking (Daily log files in a log folder)
 ## Draws
 - [x] Consider changing from polling to webhook for lower server usage
 - [x] Draw report
