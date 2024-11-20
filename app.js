@@ -18,6 +18,10 @@ const port = process.env.PORT || 3000
 
 // Routes
 
+app.get('/', (req, res) => {
+    res.send('Hello, this is the IRCC News Bot server.');
+});
+
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
 
@@ -34,7 +38,7 @@ const url = process.env.APP_URL || 'https://afternoon-crag-31332-056085fc3d15.he
 const webhookPath = process.env.WEBHOOK_PATH || '/webhook';
 const bot = new TelegramBot(token, { webHook: true })
 
-bot.setWebHook(`https://ac48-70-27-186-84.ngrok-free.app/webhook`);
+bot.setWebHook(`${url}${webhookPath}`);
 
 app.post('/webhook', (req, res) => {
     bot.processUpdate(req.body);
