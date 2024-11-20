@@ -6,18 +6,18 @@ const Parser = require('rss-parser')
 const irccNewsURL = "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=departmentofcitizenshipandimmigration&sort=publishedDate&orderBy=desc&publishedDate%3E=2021-07-23&pick=50&format=atom&atomtitle=Immigration,%20Refugees%20and%20Citizenship%20Canada"
 // Month mapping
 const monthMapping = {
-    january: 0,
-    february: 1,
-    march: 2,
-    april: 3,
+    jan: 0, january: 0,
+    feb: 1, february: 1,
+    mar: 2, march: 2,
+    apr: 3, april: 3,
     may: 4,
-    june: 5,
-    july: 6,
-    august: 7,
-    september: 8,
-    october: 9,
-    november: 10,
-    december: 11
+    jun: 5, june: 5,
+    jul: 6, july: 6,
+    aug: 7, august: 7,
+    sep: 8, september: 8,
+    oct: 9, october: 9,
+    nov: 10, november: 10,
+    dec: 11, december: 11
 };
 
 // fetch feed
@@ -30,7 +30,6 @@ async function fetchFullIRCCFeed() {
     feed.items.forEach(item => {
         // console.log(item);
     })
-
     return feed
     
 }
