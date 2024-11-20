@@ -95,6 +95,13 @@ bot.onText(/\/help/, (msg) => {
     bot.sendMessage(chatId, introMessage);
 });
 
+// Handle /month with no parameters
+bot.onText(/\/month$/, async (msg) => {
+    const chatId = msg.chat.id;
+    logger.logUserInteraction(msg);
+    await bot.sendMessage(chatId, "Please enter a valid month (e.g., /month January)");
+});
+
 bot.onText(/\/month (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const input = match[1]; //captured regex response
