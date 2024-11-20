@@ -1,4 +1,5 @@
 
+const { match } = require('assert')
 const axios = require('axios')
 const fs = require('fs')
 
@@ -49,6 +50,22 @@ const parseDraws = async (max_draw = 5) =>{
     return parsedDrawArray
 }
 
+const filterDraws =async (filter = "CEC") =>{
+    const parsedDraws = await parseDraws(50);
+
+    classFilterMap = {
+        "CEC": "Canadian Experience Class",
+        "FSW": "Federal Skilled Worker",
+        "FST": "Federal Skilled Trades",
+        "PNP": "Provincial Nominee Program",
+    }
+
+    const filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
+    return filteredDraws
+
+}
+
 module.exports = {
-    parseDraws
+    parseDraws,
+    filterDraws,
 }

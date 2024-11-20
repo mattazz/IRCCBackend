@@ -52,7 +52,8 @@ bot.setMyCommands([
     { command: '/month', description: 'Get news for a specific month (ex. /month January)' },
     { command: '/full', description: 'Get the full news feed' },
     {command : '/last_draws', description: 'Get the last 5 IRCC draws'},
-    {command : '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)'}
+    {command : '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)'},
+    {command : '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)'}
 ]);
 
 // Log all errors
@@ -226,6 +227,22 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
 
     try {
         let drawData = await irccDrawScraper.parseDraws(input);
+        for (const draw of drawData) {
+            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
+        }
+    } catch (error) {
+        await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
+        console.error("Error fetching draw data: " + error.message);
+    }
+})
+
+bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const filterCode = match[1]; //captured regex response
+    logger.logUserInteraction(msg);
+
+    try {
+        let drawData = await irccDrawScraper.filterDraws(filterCode);
         for (const draw of drawData) {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
         }
