@@ -13,4 +13,6 @@ Stay up-to-date with the latest Immigration, Refugees, and Citizenship Canada (I
     - /full - Get the full news feed
 
 # Todo
-- [ ] Consider changing from polling to webhook for lower server usage
+- [x] Consider changing from polling to webhook for lower server usage
+- [x] Draw report
+- [ ] Filter draws by class

@@ -49,8 +49,10 @@ app.post('/webhook', (req, res) => {
 bot.setMyCommands([
     { command: '/help', description: 'Get the bot commands' },
     { command: '/latest', description: 'Get the latest news' },
-    { command: '/month', description: 'Get news for a specific month (e.g., /month January)' },
-    { command: '/full', description: 'Get the full news feed' }
+    { command: '/month', description: 'Get news for a specific month (ex. /month January)' },
+    { command: '/full', description: 'Get the full news feed' },
+    {command : '/last_draws', description: 'Get the last 5 IRCC draws'},
+    {command : '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)'}
 ]);
 
 // Log all errors
@@ -187,14 +189,30 @@ bot.onText(/\/full (.+)/, async (msg) => {
     }
 })
 
-bot.onText("/draws", async (msg) => {
+bot.onText("/last_draws", async (msg) => {
     const chatId = msg.chat.id;
     logger.logUserInteraction(msg);
-    
+
     try {
         let drawData = await irccDrawScraper.parseDraws(5);
         for (const draw of drawData) {
-            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\nCRS: ${draw.crs}\nClass: ${draw.class}\nDraw Size: ${draw.drawSize}`);
+            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
+        }
+    } catch (error) {
+        await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
+        console.error("Error fetching draw data: " + error.message);
+    }
+})
+
+bot.onText(/\/draws (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const input = match[1]; //captured regex response
+    logger.logUserInteraction(msg);
+
+    try {
+        let drawData = await irccDrawScraper.parseDraws(input);
+        for (const draw of drawData) {
+            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
         }
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);

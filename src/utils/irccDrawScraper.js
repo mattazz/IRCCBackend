@@ -34,7 +34,6 @@ const parseDraws = async (max_draw = 5) =>{
 
     // only get the last 5 draws
     const limitedDraws = result.rounds.slice(0, max_draw)
-    console.log(limitedDraws)
 
     parsedDrawArray = []
 
@@ -47,11 +46,9 @@ const parseDraws = async (max_draw = 5) =>{
             "drawSize": draw.drawSize,
         })
     }
-
-    // log parsedDrawArray
-    console.log(parsedDrawArray)
-
     return parsedDrawArray
 }
 
-parseDraws(5)
+module.exports = {
+    parseDraws
+}
