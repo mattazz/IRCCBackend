@@ -45,6 +45,8 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 - [x] Specify occupations part of the draw
 - [ ] Add link to the draw 
   
+## Analyzer
+- [ ] Evaluate the accuracy of the rolling average
 ## News
 - [ ] Add press meeting news and other relevant news
 

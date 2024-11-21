@@ -12,13 +12,14 @@ const ChartJsImage = require('chartjs-to-image'); // Import chartjs-to-image
  * @param {*} analyzedData -> Needs analyzedData from irccDrawAnalyzer.analyzeCRSRollingAverage(drawData) 
  * @returns  -> Image buffer
  */
-const createChartForRolling = async (chat_id, bot_token, analyzedData = null, chartTitle = "Rolling Average CRS") => {
+const createChartForRolling = async (chat_id, bot_token,drawData = null, analyzedData = null, chartTitle = "Rolling Average CRS") => {
     if (!analyzedData) {
-        analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
+        analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData, 10);
     }
 
     // Sort the analyzedData by date
     analyzedData.sort((a, b) => new Date(a.date) - new Date(b.date));
+    drawData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
 
     // Create the chart
@@ -27,7 +28,7 @@ const createChartForRolling = async (chat_id, bot_token, analyzedData = null, ch
     chart.setConfig({
         type: 'line',
         data: {
-            labels: analyzedData.map(data => data.date),
+            labels: drawData.map(data => data.date),
             datasets: [{
                 label: chartTitle,
                 data: analyzedData.map(data => data.average),
@@ -35,7 +36,16 @@ const createChartForRolling = async (chat_id, bot_token, analyzedData = null, ch
                 backgroundColor: 'rgba(252, 48, 3, 0.2)',
                 fill: true,
                 tension: 0.1
-            }]
+            },
+            {
+                label: 'Actual CRS Scores',
+                borderColor: 'rgb(75, 192, 192)',
+                data: drawData ? drawData.map(data => data.crs) : [],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: false,
+                tension: 0.1
+            }
+        ]
         },
         options: {
             scales: {
