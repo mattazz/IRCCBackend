@@ -319,7 +319,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
         let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
 
         // Send message and photo
-        bot.sendMessage(chatId, `📊 Hey there! I analyzed the last ${drawData.length - 1} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
+        bot.sendMessage(chatId, `📊 Hey there! I analyzed the last ${drawData.length} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
         bot.sendPhoto(chatId, img_buffer);
     } catch (error) {
         await bot.sendMessage(chatId, "⁉ Error fetching draw data, please try again.");
