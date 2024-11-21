@@ -308,7 +308,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
             await bot.sendMessage(chatId, "⁉ There is no subclass data to analyze the rolling average CRS.");
             return 
         }
-        
+
         let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
 
         // Send message and photo
