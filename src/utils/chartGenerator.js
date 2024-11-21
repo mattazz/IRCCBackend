@@ -14,7 +14,7 @@ const ChartJsImage = require('chartjs-to-image'); // Import chartjs-to-image
  */
 const createChartForRolling = async (chat_id, bot_token,drawData = null, analyzedData = null, chartTitle = "Rolling Average CRS") => {
     if (!analyzedData) {
-        analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData, 10);
+        analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
     }
 
     // Sort the analyzedData by date
