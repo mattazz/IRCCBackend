@@ -76,8 +76,6 @@ const parseDraws = async (max_draw = 5) => {
  */
 const filterDraws = async (filter = "CEC", max_num = 10) => {
     const parsedDraws = await parseDraws(max_num);
-    console.log("Parsed Draws: ", JSON.stringify(parsedDraws, null, 2));
-    
 
     classFilterMap = {
         "CEC": "Canadian Experience Class",
@@ -87,9 +85,13 @@ const filterDraws = async (filter = "CEC", max_num = 10) => {
         "FLP": "French language proficiency",
         "TO": "Trade occupations",
         "HO": "Healthcare occupations",
+        "STEM": "STEM occupations",
+        "GEN" : "General",
+        "TRAN": "Transport occupations",
+        "AGRI": "Agriculture and agri-food occupations",
     }
-    
 
+    
     const filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
     
     return filteredDraws

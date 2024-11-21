@@ -270,7 +270,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     logger.logUserInteraction(msg);
 
     try {
-        let drawData = await irccDrawScraper.filterDraws(filterCode, 20);
+        let drawData = await irccDrawScraper.filterDraws(filterCode, 100);
 
 
         for (const draw of drawData) {
