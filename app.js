@@ -77,7 +77,9 @@ bot.on('webhook_error', (error) => {
 });
 
 bot.on('message', (msg) => {
-    logger.logUserInteraction(msg);
+    console.log(msg);
+    
+    logger.logUserInteraction(bot, msg);
 })
 
 app.post(webhookPath, (req, res) => {
@@ -125,6 +127,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 bot.onText(/\/help/, (msg) => {
+    logger.logUserInteraction(bot, msg);
     const chatId = msg.chat.id;
     const introMessage = `
     🤖🇨🇦 Here are some commands you can use:
@@ -154,19 +157,21 @@ bot.onText(/\/help/, (msg) => {
     "AGRI": "Agriculture and agri-food occupations"`
 
     bot.sendMessage(chatId, introMessage);
+    const logString = logger.parseLogToString(bot, msg);
+    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
 });
 
 // Handle /month with no parameters
 bot.onText(/\/month$/, async (msg) => {
     const chatId = msg.chat.id;
-    logger.logUserInteraction(msg);
+    logger.logUserInteraction(bot, msg);
     await bot.sendMessage(chatId, "⁉ Please enter a valid month (e.g., /month January)");
 });
 
 bot.onText(/\/month (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const input = match[1]; //captured regex response
-    logger.logUserInteraction(msg);
+    logger.logUserInteraction(bot, msg);
 
     if (!input) {
         await bot.sendMessage(chatId, "⁉ Please enter a valid month (e.g. /month January)");
@@ -204,7 +209,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
 
 bot.onText("/latest", async (msg) => {
     const chatId = msg.chat.id;
-    logger.logUserInteraction(msg);
+    logger.logUserInteraction(bot, msg);
     try {
         // get latest month
         input_month = new Date().toLocaleString('default', { month: 'long' });
@@ -231,7 +236,7 @@ bot.onText("/latest", async (msg) => {
 
 bot.onText(/\/full (.+)/, async (msg) => {
     const chatId = msg.chat.id;
-    logger.logUserInteraction(msg);
+    logger.logUserInteraction(bot, msg);
     // Fetch RSS Feed
     try {
         let feedResult = await rssParser.fetchFullIRCCFeed();
@@ -248,7 +253,7 @@ bot.onText(/\/full (.+)/, async (msg) => {
 
 bot.onText("/last_draws", async (msg) => {
     const chatId = msg.chat.id;
-    logger.logUserInteraction(msg);
+    logger.logUserInteraction(bot, msg);
 
     try {
         let drawData = await irccDrawScraper.parseDraws(5);
@@ -264,7 +269,7 @@ bot.onText("/last_draws", async (msg) => {
 bot.onText(/\/draws (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const input = match[1]; //captured regex response
-    logger.logUserInteraction(msg);
+    logger.logUserInteraction(bot, msg);
 
     try {
         let drawData = await irccDrawScraper.parseDraws(input);
@@ -281,7 +286,7 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
 bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const filterCode = match[1]; //captured regex response
-    logger.logUserInteraction(msg);
+    logger.logUserInteraction(bot, msg);
 
     try {
         let [drawData, subclassDrawData] = await irccDrawScraper.filterDraws(filterCode, 300);

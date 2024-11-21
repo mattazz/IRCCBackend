@@ -1,7 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const TelegramBot = require('node-telegram-bot-api')
+const dotenv = require('dotenv');
 
-function logUserInteraction(msg){
+const admin_id = process.env.ADMIN_USER_ID;
+
+function logUserInteraction(bot, msg){
     const dateTime = new Date();
     const chatId = msg.chat.id;
     const userId = msg.from.id;
@@ -19,7 +23,19 @@ function logUserInteraction(msg){
         messageText
     }
     
+    // Send log to admin
+    // sendLogToPrimary(bot, log);
     // Save logs to a file
+
+}
+function parseLogToString(bot, msg){
+    const dateTime = new Date();
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+    const userName = msg.from.username || `${msg.from.first_name} ${msg.from.last_name}`;
+    const messageText = msg.text;
+
+    return (`User Interaction - Chat ID: ${chatId}, User ID: ${userId}, Username: ${userName}, Message: ${messageText}`);
 
 }
 
@@ -45,6 +61,16 @@ function saveLogToFile(log){
         }
     });
 }
+
+function sendLogToPrimary(bot, admin_id=admin_id, log){
+    
+    // Send log to primary user
+    const primaryChatId = admin_id;
+    if (primaryChatId) {
+        bot.sendMessage(primaryChatId, JSON.stringify(log, null, 2));
+    }
+
+} 
     
 const testLogSaveFile = () =>{
     const log = {
@@ -58,5 +84,7 @@ const testLogSaveFile = () =>{
 }
 
 module.exports={
-    logUserInteraction
+    logUserInteraction,
+    sendLogToPrimary,
+    parseLogToString,
 }
