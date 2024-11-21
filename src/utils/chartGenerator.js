@@ -37,14 +37,14 @@ const createChartForRolling = async (chat_id, bot_token,drawData = null, analyze
                 fill: true,
                 tension: 0.1
             },
-            // {
-            //     label: 'Actual CRS Scores',
-            //     borderColor: 'rgb(75, 192, 192)',
-            //     data: drawData ? drawData.map(data => data.crs) : [],
-            //     backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            //     fill: false,
-            //     tension: 0.1
-            // }
+            {
+                label: 'Actual CRS Scores',
+                borderColor: 'rgb(75, 192, 192)',
+                data: drawData ? drawData.map(data => data.crs) : [],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: false,
+                tension: 0.1
+            }
         ]
         },
         options: {
