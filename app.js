@@ -108,6 +108,10 @@ bot.onText(/\/start/, (msg) => {
     "FLP": "French language proficiency",
     "TO": "Trade occupations",
     "HO": "Healthcare occupations",
+    "STEM": "STEM occupations",
+    "GEN" : "General",
+    "TRAN": "Transport occupations",
+    "AGRI": "Agriculture and agri-food occupations"
     `
 
     bot.sendMessage(chatId, introMessage);
@@ -136,7 +140,11 @@ bot.onText(/\/help/, (msg) => {
     "PNP" - Provincial Nominee Program
     "FLP": "French language proficiency",
     "TO": "Trade occupations",
-    "HO": "Healthcare occupations",`
+    "HO": "Healthcare occupations",
+    "STEM": "STEM occupations",
+    "GEN" : "General",
+    "TRAN": "Transport occupations",
+    "AGRI": "Agriculture and agri-food occupations"`
 
     bot.sendMessage(chatId, introMessage);
 });
