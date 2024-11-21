@@ -31,7 +31,7 @@ const createChartForRolling = async (chat_id, bot_token, analyzedData = null, ch
             datasets: [{
                 label: chartTitle,
                 data: analyzedData.map(data => data.average),
-                borderColor: 'rgb(75, 192, 192)',
+                borderColor: 'rgb(252, 48, 3)',
                 tension: 0.1
             }]
         },
