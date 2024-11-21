@@ -35,6 +35,8 @@ const devMode = 'false'
 
 // TG Bot
 const token = devMode ? process.env.DEV_TG_TOKEN : process.env.TG_TOKEN;
+console.log("Setting TG Bot token:" + token);
+
 if (!token) {
     console.error("Telegram Bot Token not provided");
     process.exit(1)
@@ -43,6 +45,9 @@ if (!token) {
 
 
 const url = devMode ? process.env.DEV_URL : process.env.APP_URL;
+console.log("Setting URL:" + url);
+
+
 const webhookPath = process.env.WEBHOOK_PATH || '/webhook';
 const bot = new TelegramBot(token, { webHook: true })
 
@@ -297,7 +302,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
         // Analyze draws 
         let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
 
-        console.log(analyzedData);
+        // console.log(analyzedData);
         
 
 
