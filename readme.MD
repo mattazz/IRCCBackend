@@ -26,6 +26,14 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
     "PNP  - Provincial Nomination Program
 
 
+# Updates
+**November 21, 2024**
+
+- **Analyzer Enhancements**: Improved the analyzer to evaluate draws based on sufficient data points within each draw class.
+- **Chart Display Logic**: Added logic to conditionally display charts only when there are enough data points.
+- **Error Handling**: Revamped error handling mechanisms across the application for better reliability.
+
+
 # Todo
 ## Logs
 - [x] Add creation of local log files for metrics tracking (Daily log files in a log folder) -> Function is there, but can't log in heroku without using add-ons or something like AWS S3
@@ -45,9 +53,3 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 - [ ] Improve styling of chart (red primary color)
 
 
-# Updates
-**November 21, 2024**
-
-- **Analyzer Enhancements**: Improved the analyzer to evaluate draws based on sufficient data points within each draw class.
-- **Chart Display Logic**: Added logic to conditionally display charts only when there are enough data points.
-- **Error Handling**: Revamped error handling mechanisms across the application for better reliability.
