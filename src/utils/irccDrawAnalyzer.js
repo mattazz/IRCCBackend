@@ -6,7 +6,7 @@ const irccDrawScraper = require('./irccDrawScraper');
  * @param {*} data -> parsedDrawArray{date, drawNumber, crs, class, drawSize}
  */
 const analyzeCRSRollingAverage = (data, rolling_length = 2) => {
-    console.log("Data from Analyzer: ", data);
+    // console.log("Data from Analyzer: ", data);
 
     const crsData = data.map(draw => {
         const crsScore = Number(draw.crs); // Convert CRS to a number
