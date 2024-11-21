@@ -105,6 +105,9 @@ bot.onText(/\/start/, (msg) => {
     "FSW" - Federal Skilled Worker
     "FST" - Federal Skilled Trades
     "PNP" - Provincial Nominee Program
+    "FLP": "French language proficiency",
+    "TO": "Trade occupations",
+    "HO": "Healthcare occupations",
     `
 
     bot.sendMessage(chatId, introMessage);
@@ -130,7 +133,10 @@ bot.onText(/\/help/, (msg) => {
     "CEC" - Canadian Experience Class
     "FSW" - Federal Skilled Worker
     "FST" - Federal Skilled Trades
-    "PNP" - Provincial Nominee Program`
+    "PNP" - Provincial Nominee Program
+    "FLP": "French language proficiency",
+    "TO": "Trade occupations",
+    "HO": "Healthcare occupations",`
 
     bot.sendMessage(chatId, introMessage);
 });
