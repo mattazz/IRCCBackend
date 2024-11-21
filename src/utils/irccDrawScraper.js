@@ -33,6 +33,7 @@ const parseDraws = async (max_draw = 5) => {
     // draws will be a json object
     try {
         const result = await getDraws()
+        
         // only get the last 5 draws
         const limitedDraws = result.rounds.slice(0, max_draw)
 
@@ -91,10 +92,17 @@ const filterDraws = async (filter = "CEC", max_num = 10) => {
         "AGRI": "Agriculture and agri-food occupations",
     }
 
+
+    let filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
+
+    let subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
+    if (filteredDraws.length < 10){
+        subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
+    } else{
+        subclassFilteredDraws = []
+    }
     
-    const filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
-    
-    return filteredDraws
+    return [filteredDraws, subclassFilteredDraws]
 
 }
 

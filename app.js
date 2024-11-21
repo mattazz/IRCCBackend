@@ -278,10 +278,20 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     logger.logUserInteraction(msg);
 
     try {
-        let drawData = await irccDrawScraper.filterDraws(filterCode, 100);
+        let [drawData, subclassDrawData] = await irccDrawScraper.filterDraws(filterCode, 300);
 
+        let toMessageDrawData = drawData.length > 10 ? drawData.slice(0, 10) : draw
 
-        for (const draw of drawData) {
+        if (subclassDrawData.length != 0) {
+            toMessageDrawData = subclassDrawData.length > 10 ? subclassDrawData.slice(0, 10) : subclassDrawData;
+        }
+        else {
+            toMessageDrawData = drawData.length > 10 ? drawData.slice(0, 10) : draw
+        }
+
+        await bot.sendMessage(chatId, `🇨🇦Showing the last 10 draws for ${filterCode}🇨🇦`);
+
+        for (const draw of toMessageDrawData) {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Sub-class: ${draw.subclass}\n👉Draw Size: ${draw.drawSize}`);
         }
 
