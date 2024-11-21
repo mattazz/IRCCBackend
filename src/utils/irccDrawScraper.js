@@ -76,6 +76,7 @@ const parseDraws = async (max_draw = 5) => {
  */
 const filterDraws = async (filter = "CEC", max_num = 10) => {
     const parsedDraws = await parseDraws(max_num);
+    console.log("Parsed Draws: ", JSON.stringify(parsedDraws, null, 2));
     
 
     classFilterMap = {
@@ -85,7 +86,7 @@ const filterDraws = async (filter = "CEC", max_num = 10) => {
         "PNP": "Provincial Nominee Program",
         "FLP": "French language proficiency",
         "TO": "Trade occupations",
-        "HO": "Health occupations",
+        "HO": "Healthcare occupations",
     }
     
 
