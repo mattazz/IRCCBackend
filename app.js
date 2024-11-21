@@ -77,7 +77,6 @@ bot.on('webhook_error', (error) => {
 });
 
 bot.on('message', (msg) => {
-    console.log(msg);
     
     logger.logUserInteraction(bot, msg);
 })
