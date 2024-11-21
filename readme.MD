@@ -34,7 +34,7 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 - [x] Consider changing from polling to webhook for lower server usage
 - [x] Draw report
 - [x] Filter draws by class
-- [ ] Specify occupations part of the draw
+- [x] Specify occupations part of the draw
 - [ ] Add link to the draw 
   
 ## News
@@ -43,3 +43,11 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 ## Chart
 - [ ] Improve chart headline to include specific draw class
 - [ ] Improve styling of chart (red primary color)
+
+
+# Updates
+**November 21, 2024**
+
+- **Analyzer Enhancements**: Improved the analyzer to evaluate draws based on sufficient data points within each draw class.
+- **Chart Display Logic**: Added logic to conditionally display charts only when there are enough data points.
+- **Error Handling**: Revamped error handling mechanisms across the application for better reliability.
