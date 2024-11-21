@@ -31,7 +31,7 @@ app.listen(port, () => {
 })
 
 /** Changes URL and Token to be used */
-const devMode = process.env.DEV_MODE === 'false';
+const devMode = process.env.DEV_MODE 
 console.log("Setting Dev Mode:" + devMode);
 
 
