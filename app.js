@@ -32,6 +32,8 @@ app.listen(port, () => {
 
 /** Changes URL and Token to be used */
 const devMode = process.env.DEV_MODE === 'false';
+console.log("Setting Dev Mode:" + devMode);
+
 
 // TG Bot
 const token = devMode ? process.env.DEV_TG_TOKEN : process.env.TG_TOKEN;
