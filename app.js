@@ -153,7 +153,7 @@ bot.onText(/\/help/, (msg) => {
 bot.onText(/\/month$/, async (msg) => {
     const chatId = msg.chat.id;
     logger.logUserInteraction(msg);
-    await bot.sendMessage(chatId, "Please enter a valid month (e.g., /month January)");
+    await bot.sendMessage(chatId, "⁉ Please enter a valid month (e.g., /month January)");
 });
 
 bot.onText(/\/month (.+)/, async (msg, match) => {
@@ -162,7 +162,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
     logger.logUserInteraction(msg);
 
     if (!input) {
-        await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
+        await bot.sendMessage(chatId, "⁉ Please enter a valid month (e.g. /month January)");
         return
     }
 
@@ -173,10 +173,10 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
         let feedMessage = await rssParser.fetchIRCCFeed_Monthly(input_month);
 
         if (feedMessage.length === 0) {
-            await bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
+            await bot.sendMessage(chatId, "⁉ No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
         } else {
-            await bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
+            await bot.sendMessage(chatId, "🇨🇦 Here are the news for the month of " + input_month + " " + new Date().getFullYear()+ " 🇨🇦");
         }
 
         // Send Message, iterate and send one message per item
@@ -185,11 +185,11 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
         }
     } catch (error) {
         if (error.message === "Invalid Month") {
-            await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
+            await bot.sendMessage(chatId, "⁉ Please enter a valid month (e.g. /month January)");
             return
         } else {
-            console.error("Error fetching feed: " + error.message);
-            await bot.sendMessage(chatId, "Error fetching feed: " + error.message);
+            console.error("Error fetching feed: " + error.stack);
+            await bot.sendMessage(chatId, "⁉ Error fetching feed, please try again. ");
         }
 
     }
@@ -209,7 +209,6 @@ bot.onText("/latest", async (msg) => {
             await bot.sendMessage(chatId, "No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
         } else {
-            await bot.sendMessage(chatId, "Here are the news for the month of " + input_month + " " + new Date().getFullYear());
         }
 
         // Send Message, iterate and send one message per item
@@ -217,7 +216,7 @@ bot.onText("/latest", async (msg) => {
             await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
-        await bot.sendMessage(chatId, `Error fetching feed for the month of ${input_month} ${new Date().getFullYear()}`);
+        await bot.sendMessage(chatId, `⁉ Error fetching feed for the month of ${input_month} ${new Date().getFullYear()}`);
         console.error("Error onText: " + error.stack);
     }
 });
@@ -235,8 +234,8 @@ bot.onText(/\/full (.+)/, async (msg) => {
             await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
-        await bot.sendMessage(chatId, "Error fetching feed: " + error.message);
-        console.error("Error fetching feed: " + error.message);
+        await bot.sendMessage(chatId, "⁉ Error fetching feed, please try again. ");
+        console.error("Error fetching feed: " + error.stack);
     }
 })
 
@@ -250,8 +249,8 @@ bot.onText("/last_draws", async (msg) => {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Sub-class: ${draw.subclass}\n👉Draw Size: ${draw.drawSize}`);
         }
     } catch (error) {
-        await bot.sendMessage(chatId, "Error fetching draw data");
-        console.error("bot.onText /last_draws - Error fetching draw data: " + error.message);
+        await bot.sendMessage(chatId, "⁉ Error fetching draw data");
+        console.error("bot.onText /last_draws - Error fetching draw data: " + error.stack);
     }
 })
 
@@ -267,7 +266,7 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
 
         }
     } catch (error) {
-        await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
+        await bot.sendMessage(chatId, "⁉ Error fetching draw data, please try again.");
         console.error("bot.onText /draws [num] - Error fetching draw data: " + error.message);
     }
 })
@@ -297,16 +296,22 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
         // Analyze draws 
         let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
+
+        if (analyzedData.length < 2) {
+            await bot.sendMessage(chatId, "⁉ Not enough specific subclass data to analyze the rolling average CRS.");
+            return
+        } else if (subclassDrawData.length === 0) {
+            await bot.sendMessage(chatId, "⁉ Not enough specific subclass data to analyze the rolling average CRS.");
+        }
+
+
         let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
 
         // Send message and photo
-        if (analyzedData.length === 0) {
-        } else {
-            bot.sendMessage(chatId, `Hey there! I analyzed the last ${drawData.length - 1} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
-            bot.sendPhoto(chatId, img_buffer);
-        }
+        bot.sendMessage(chatId, `Hey there! I analyzed the last ${drawData.length - 1} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
+        bot.sendPhoto(chatId, img_buffer);
     } catch (error) {
-        await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
+        await bot.sendMessage(chatId, "⁉ Error fetching draw data, please try again.");
         console.error("bot.onText /filter_draws [CODE] - Error fetching draw data: " + error.stack);
     }
 })
