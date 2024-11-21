@@ -316,7 +316,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
             return 
         }
 
-        let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
+        let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData, `Rolling Average CRS for ${filterCode}`);
 
         // Send message and photo
         bot.sendMessage(chatId, `📊 Hey there! I analyzed the last ${drawData.length} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
