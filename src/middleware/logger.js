@@ -35,7 +35,7 @@ function parseLogToString(bot, msg){
     const userName = msg.from.username || `${msg.from.first_name} ${msg.from.last_name}`;
     const messageText = msg.text;
 
-    return (`User Interaction - Chat ID: ${chatId}, User ID: ${userId}, Username: ${userName}, Message: ${messageText}`);
+    return (`User Interaction - Date: ${dateTime} Chat ID: ${chatId}, User ID: ${userId}, Username: ${userName}, Message: ${messageText}`);
 
 }
 
