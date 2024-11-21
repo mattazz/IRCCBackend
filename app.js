@@ -30,16 +30,22 @@ app.listen(port, () => {
 
 })
 
+/** Changes URL and Token to be used */
+const devMode = 'true'
+
 // TG Bot
-const token = process.env.TG_TOKEN || '';
+const token = devMode ? process.env.DEV_TG_TOKEN : process.env.TG_TOKEN;
 if (!token) {
     console.error("Telegram Bot Token not provided");
     process.exit(1)
 }
 
-const url = process.env.APP_URL || 'https://afternoon-crag-31332-056085fc3d15.herokuapp.com/';
+
+
+const url = devMode ? process.env.DEV_URL : process.env.APP_URL;
 const webhookPath = process.env.WEBHOOK_PATH || '/webhook';
 const bot = new TelegramBot(token, { webHook: true })
+
 
 bot.setWebHook(`${url}${webhookPath}`);
 
@@ -53,9 +59,9 @@ bot.setMyCommands([
     { command: '/latest', description: 'Get the latest news' },
     { command: '/month', description: 'Get news for a specific month (ex. /month January)' },
     { command: '/full', description: 'Get the full news feed' },
-    {command : '/last_draws', description: 'Get the last 5 IRCC draws'},
-    {command : '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)'},
-    {command : '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)'}
+    { command: '/last_draws', description: 'Get the last 5 IRCC draws' },
+    { command: '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)' },
+    { command: '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)' }
 ]);
 
 // Log all errors
@@ -63,14 +69,14 @@ bot.on('webhook_error', (error) => {
     console.error('Webhook Error:', error);  // Log the full error object
 });
 
-bot.on('message', (msg) =>{
+bot.on('message', (msg) => {
     logger.logUserInteraction(msg);
 })
 
 app.post(webhookPath, (req, res) => {
     bot.processUpdate(req.body);
     console.log(req.body);
-    
+
     res.sendStatus(200);
 })
 
@@ -141,7 +147,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
     const input = match[1]; //captured regex response
     logger.logUserInteraction(msg);
 
-    if(!input){
+    if (!input) {
         await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
         return
     }
@@ -164,14 +170,14 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
             await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
-        if(error.message === "Invalid Month"){
+        if (error.message === "Invalid Month") {
             await bot.sendMessage(chatId, "Please enter a valid month (e.g. /month January)");
             return
-        } else{
+        } else {
             console.error("Error fetching feed: " + error.message);
             await bot.sendMessage(chatId, "Error fetching feed: " + error.message);
         }
-        
+
     }
 });
 
@@ -212,7 +218,7 @@ bot.onText(/\/full (.+)/, async (msg) => {
         let feedMessage = feedResult.items
         // Send Message, iterate and send one message per item
         for (const item of feedMessage) {
-            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate)  + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching feed: " + error.message);
@@ -227,11 +233,11 @@ bot.onText("/last_draws", async (msg) => {
     try {
         let drawData = await irccDrawScraper.parseDraws(5);
         for (const draw of drawData) {
-            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
+            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Sub-class: ${draw.subclass}\n👉Draw Size: ${draw.drawSize}`);
         }
     } catch (error) {
-        await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
-        console.error("Error fetching draw data: " + error.message);
+        await bot.sendMessage(chatId, "Error fetching draw data");
+        console.error("bot.onText /last_draws - Error fetching draw data: " + error.message);
     }
 })
 
@@ -243,12 +249,12 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
     try {
         let drawData = await irccDrawScraper.parseDraws(input);
         for (const draw of drawData) {
-            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
+            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Sub-class: ${draw.subclass}\n👉Draw Size: ${draw.drawSize}`);
 
         }
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
-        console.error("Error fetching draw data: " + error.message);
+        console.error("bot.onText /draws [num] - Error fetching draw data: " + error.message);
     }
 })
 
@@ -259,8 +265,10 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
     try {
         let drawData = await irccDrawScraper.filterDraws(filterCode, 20);
+        
+
         for (const draw of drawData) {
-            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Draw Size: ${draw.drawSize}`);
+            await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Sub-class: ${draw.subclass}\n👉Draw Size: ${draw.drawSize}`);
         }
 
         // Analyze draws 
@@ -268,11 +276,11 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
         let img_buffer = await chartGenerator.createChartForRolling(chatId, token, analyzedData);
 
         // Send message and photo
-        bot.sendMessage(chatId,`Hey there! I analyzed the last ${drawData.length-1} draws from ${drawData[0].date} to ${drawData[drawData.length - 1].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
+        bot.sendMessage(chatId, `Hey there! I analyzed the last ${drawData.length - 1} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
         bot.sendPhoto(chatId, img_buffer);
-        
+
     } catch (error) {
         await bot.sendMessage(chatId, "Error fetching draw data: " + error.message);
-        console.error("Error fetching draw data: " + error.message);
+        console.error("bot.onText /filter_draws [CODE] - Error fetching draw data: " + error.stack);
     }
 })

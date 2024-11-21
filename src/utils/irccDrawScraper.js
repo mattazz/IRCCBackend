@@ -18,8 +18,8 @@ const getDraws = async () => {
     try {
         const response = await axios.get(drawUrl)
         return response.data // returns json data
-    } catch (error) {
-        console.error(error)
+    } catch (error) {        
+        console.error("irccDrawScraper.js - getDraws() -" +  error)
     }
 }
 
@@ -29,25 +29,42 @@ const getDraws = async () => {
  * @param {number} max_draw - The maximum number of draws to return.
  * @returns {Promise<Array>} An array of objects containing the parsed draw data.
  */
-const parseDraws = async (max_draw = 5) =>{
+const parseDraws = async (max_draw = 5) => {
     // draws will be a json object
-    const result = await getDraws()
+    try {
+        const result = await getDraws()
+        // only get the last 5 draws
+        const limitedDraws = result.rounds.slice(0, max_draw)
 
-    // only get the last 5 draws
-    const limitedDraws = result.rounds.slice(0, max_draw)
+        parsedDrawArray = []
 
-    parsedDrawArray = []
-
-    for(const draw of limitedDraws){
-        parsedDrawArray.push({
-            "date": draw.drawDate,
-            "drawNumber": draw.drawNumber,
-            "crs": draw.drawCRS,
-            "class": draw.drawText2,
-            "drawSize": draw.drawSize,
-        })
+        for (const draw of limitedDraws) {
+            const drawDate = new Date(draw.drawDate)
+            if (isNaN(drawDate)){
+                console.error(`Invalid date format: ${draw.drawDate}`);
+                continue
+            }
+            
+            parsedDrawArray.push({
+                "date": draw.drawDate,
+                "drawNumber": draw.drawNumber,
+                "crs": draw.drawCRS,
+                "class": draw.drawName,
+                "subclass": draw.drawText2,
+                "drawSize": draw.drawSize,
+            })
+    
+        }
+        return parsedDrawArray
+    } catch (error) {
+        console.error("ERRORRRRR: " + error)
     }
-    return parsedDrawArray
+
+    // console.log("Result:", JSON.stringify(result, null, 2));
+
+
+
+    
 }
 
 /**
@@ -57,17 +74,23 @@ const parseDraws = async (max_draw = 5) =>{
  * @param {*} max_num  Maximum number of draws to return.
  * @returns 
  */
-const filterDraws =async (filter = "CEC", max_num = 10) =>{
+const filterDraws = async (filter = "CEC", max_num = 10) => {
     const parsedDraws = await parseDraws(max_num);
+    
 
     classFilterMap = {
         "CEC": "Canadian Experience Class",
         "FSW": "Federal Skilled Worker",
         "FST": "Federal Skilled Trades",
         "PNP": "Provincial Nominee Program",
+        "FLP": "French language proficiency",
+        "TO": "Trade occupations",
+        "HO": "Health occupations",
     }
+    
 
     const filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
+    
     return filteredDraws
 
 }

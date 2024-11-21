@@ -10,14 +10,13 @@ const analyzeCRSRollingAverage = (data, rolling_length = 2) => {
 
     const crsData = data.map(draw => {
         const crsScore = Number(draw.crs); // Convert CRS to a number
-        console.log(`Processing draw on ${draw.date} with CRS: ${draw.crs}, Parsed CRS: ${crsScore}`);
         return {
             date: draw.date,
             crs: crsScore
         };
     }).filter(draw => !isNaN(draw.crs)); // Filter out invalid CRS values
 
-    console.log("Filtered Crs Data from Analyzer: ", crsData);
+    // console.log("irccDrawAnalyze.js: Filtered Crs Data from Analyzer: ", crsData);
     
 
       // Check if there is sufficient data to calculate a rolling average
@@ -38,10 +37,6 @@ const analyzeCRSRollingAverage = (data, rolling_length = 2) => {
             average: parseFloat(average.toFixed(2)) // Round to 2 decimal places
         });
     }
-
-
-    // console.log("Rolling Average: ", rollingAverage);
-
     return rollingAverage;
 
 }
