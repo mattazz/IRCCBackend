@@ -434,8 +434,29 @@ bot.on('callback_query', (query) =>{
         
     } else if (query.data === "alb"){
         bot.sendMessage(chatId, "Alberta's Provincial Nomination Program (PNP) is... https://www.alberta.ca/alberta-advantage-immigration-program", backToPNPMenu);
-    }
-    else if (query.data === "main_menu"){
+    } else if (query.data === "bc"){
+        bot.sendMessage(chatId, "British Columbia's Provincial Nomination Program (PNP) is... https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program", backToPNPMenu);
+    } else if ( query.data === "man"){
+        bot.sendMessage(chatId, "Manitoba's Provincial Nomination Program (PNP) is... https://www.immigratemanitoba.com/", backToPNPMenu);
+    } else if ( query.data === " nb"){
+        bot.sendMessage(chatId, "New Brunswick's Provincial Nomination Program (PNP) is... https://www2.gnb.ca/content/gnb/en/corporate/promo/immigration/immigrating-to-nb/nb-immigration-program-streams.html", backToPNPMenu);
+    } else if ( query.data === "nfl"){
+        bot.sendMessage(chatId, "Newfoundland and Labrador's Provincial Nomination Program (PNP) is... https://www.gov.nl.ca/immigration/immigrating-to-newfoundland-and-labrador/provincial-nominee-program/overview/", backToPNPMenu);
+    } else if ( query.data === "nt"){
+        bot.sendMessage(chatId, "Northwest Territories' Provincial Nomination Program (PNP) is... https://www.immigratenwt.ca/immigrate-here", backToPNPMenu);
+    } else if ( query.data === "ns"){
+        bot.sendMessage(chatId, "Nova Scotia's Provincial Nomination Program (PNP) is... https://liveinnovascotia.com/nova-scotia-nominee-program/", backToPNPMenu);
+    } else if ( query.data === "ont"){
+        bot.sendMessage(chatId, "Ontario's Provincial Nomination Program (PNP) is... https://www.ontario.ca/page/immigrate-to-ontario", backToPNPMenu);
+    } else if ( query.data === "pei"){
+        bot.sendMessage(chatId, "Prince Edward Island's Provincial Nomination Program (PNP) is... https://www.princeedwardisland.ca/en/information/office-of-immigration/provincial-nominee-program", backToPNPMenu);
+    } else if ( query.data === "qc"){
+        bot.sendMessage(chatId, "Quebec's Provincial Nomination Program (PNP) is... https://www.quebec.ca/en/immigration/permanent/skilled-workers/regular-skilled-worker-program", backToPNPMenu);
+    } else if ( query.data === "sk"){
+        bot.sendMessage(chatId, "Saskatchewan's Provincial Nomination Program (PNP) is... https://www.saskatchewan.ca/residents/moving-to-saskatchewan", backToPNPMenu);
+    } else if ( query.data === "yk"){
+        bot.sendMessage(chatId, "Yukon's Provincial Nomination Program (PNP) is... https://yukon.ca/immigrate-yukon", backToPNPMenu);
+    } else if (query.data === "main_menu"){
         bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", mainMenu); 
     }
 })
