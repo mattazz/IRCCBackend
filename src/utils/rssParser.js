@@ -1,5 +1,6 @@
 const axios = require('axios')
 const Parser = require('rss-parser')
+const utils = require('./utils')
 
 
 const irccNewsURL = "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=departmentofcitizenshipandimmigration&sort=publishedDate&orderBy=desc&publishedDate%3E=2021-07-23&pick=50&format=atom&atomtitle=Immigration,%20Refugees%20and%20Citizenship%20Canada"
@@ -82,22 +83,23 @@ async function fetchIRCCFeed_Monthly(input_month){
     return monthlyItems
 }
 
-/**
- * Formats the date string to a more readable format.
- * 
- * @param {*} dateString The date string to format.
- * @returns {String} The formatted date string.
- */
-function formatDate(dateString){
-    const date = new Date(dateString);
-    const options = {year: "numeric", month: 'long', day: 'numeric'};
-    return date.toLocaleDateString('en-US', options);
+async function keywordSearchIRCCFeed(keyword){
+    let feed = await fetchFullIRCCFeed();
+
+    
+
+    // Filter item.title based on the keyword
+    let keywordItems = feed.items.filter(item =>{
+        return item.summary.toLowerCase().includes(keyword.toLowerCase());
+    })
+
+
+    return keywordItems
 }
 
 module.exports = {
     fetchFullIRCCFeed,
     fetchIRCCFeed_Monthly,
     validateUserMonthInput,
-    formatDate
-
+    keywordSearchIRCCFeed
 }

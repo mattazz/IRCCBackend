@@ -28,6 +28,7 @@ function logUserInteraction(bot, msg){
     // Save logs to a file
 
 }
+
 function parseLogToString(bot, msg){
     const dateTime = new Date();
     const chatId = msg.chat.id;

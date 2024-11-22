@@ -8,6 +8,7 @@ const logger = require('./src/middleware/logger')
 const irccDrawScraper = require('./src/utils/irccDrawScraper')
 const chartGenerator = require('./src/utils/chartGenerator')
 const irccDrawAnalyzer = require('./src/utils/irccDrawAnalyzer')
+const utils = require('./src/utils/utils')
 
 require('dotenv').config();
 
@@ -31,7 +32,7 @@ app.listen(port, () => {
 })
 
 /** Changes URL and Token to be used */
-const devMode = process.env.DEV_MODE  === 'true'
+const devMode = process.env.DEV_MODE === 'true'
 console.log("Setting Dev Mode:" + devMode);
 
 
@@ -63,7 +64,8 @@ app.post('/webhook', (req, res) => {
 // Set up command menu
 bot.setMyCommands([
     { command: '/help', description: 'Get the bot commands' },
-    { command: '/latest', description: 'Get the latest news' },
+    { command: '/latest_news', description: 'Get the latest news' },
+    { command: '/search_news', description: 'Search for news by keyword (ex. /search_news Express Entry)' },
     { command: '/month', description: 'Get news for a specific month (ex. /month January)' },
     { command: '/full', description: 'Get the full news feed' },
     { command: '/last_draws', description: 'Get the last 5 IRCC draws' },
@@ -77,7 +79,7 @@ bot.on('webhook_error', (error) => {
 });
 
 bot.on('message', (msg) => {
-    
+
     logger.logUserInteraction(bot, msg);
 })
 
@@ -99,7 +101,7 @@ bot.onText(/\/start/, (msg) => {
     - /help - List down all the possible commands
 
     News: 
-    - /latest - Get the latest news
+    - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
     - /full - Get the full news feed
 
@@ -128,7 +130,7 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/help/, (msg) => {
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
-    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);   
+    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
 
     const chatId = msg.chat.id;
     const introMessage = `
@@ -136,7 +138,7 @@ bot.onText(/\/help/, (msg) => {
     - /help - List down all the possible commands
 
     News: 
-    - /latest - Get the latest news
+    - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
     - /full - Get the full news feed
 
@@ -197,12 +199,12 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
             await bot.sendMessage(chatId, "⁉ No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
         } else {
-            await bot.sendMessage(chatId, "🇨🇦 Here are the news for the month of " + input_month + " " + new Date().getFullYear()+ " 🇨🇦");
+            await bot.sendMessage(chatId, "🇨🇦 Here are the news for the month of " + input_month + " " + new Date().getFullYear() + " 🇨🇦");
         }
 
         // Send Message, iterate and send one message per item
         for (const item of feedMessage) {
-            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
         if (error.message === "Invalid Month") {
@@ -216,7 +218,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
     }
 });
 
-bot.onText("/latest", async (msg) => {
+bot.onText("/latest_news", async (msg) => {
     const chatId = msg.chat.id;
 
     logger.logUserInteraction(bot, msg);
@@ -238,13 +240,43 @@ bot.onText("/latest", async (msg) => {
 
         // Send Message, iterate and send one message per item
         for (const item of feedMessage) {
-            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
         await bot.sendMessage(chatId, `⁉ Error fetching feed for the month of ${input_month} ${new Date().getFullYear()}`);
         console.error("Error onText: " + error.stack);
     }
 });
+
+bot.onText(/\/search_news (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const keyword = match[1]; //captured regex response
+
+    logger.logUserInteraction(bot, msg);
+    const logString = logger.parseLogToString(bot, msg);
+    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
+
+    try {
+        let feedMessage = await rssParser.keywordSearchIRCCFeed(keyword);
+
+        if (feedMessage.length === 0) {
+            await bot.sendMessage(chatId, "⁉ No news found for the keyword " + keyword);
+            return
+        } else {
+            await bot.sendMessage(chatId, "🇨🇦 Here are the news for the keyword: " + keyword + " 🇨🇦");
+        }
+
+        // Send Message, iterate and send one message per item
+        for (const item of feedMessage) {
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
+        }
+    } catch (error) {
+        await bot.sendMessage(chatId, "⁉ Error fetching feed, please try again. ");
+        console.error("Error fetching feed: " + error.stack)
+
+    }
+
+})
 
 
 bot.onText("/full", async (msg) => {
@@ -260,7 +292,7 @@ bot.onText("/full", async (msg) => {
         let feedMessage = feedResult.items
         // Send Message, iterate and send one message per item
         for (const item of feedMessage) {
-            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
         await bot.sendMessage(chatId, "⁉ Error fetching feed, please try again. ");
@@ -309,7 +341,7 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
 bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const filterCode = match[1]; //captured regex response
-    
+
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
     logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
@@ -336,7 +368,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
         let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
 
         // console.log(analyzedData);
-        
+
 
 
         if (analyzedData.length < 2) {
@@ -344,10 +376,10 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
             return
         } else if (analyzedData.length == 0) {
             await bot.sendMessage(chatId, "⁉ There is no subclass data to analyze the rolling average CRS.");
-            return 
+            return
         }
 
-        let img_buffer = await chartGenerator.createChartForRolling(chatId, token,drawData, analyzedData, `Rolling Average CRS for ${filterCode}`);
+        let img_buffer = await chartGenerator.createChartForRolling(chatId, token, drawData, analyzedData, `Rolling Average CRS for ${filterCode}`);
 
         // Send message and photo
         bot.sendMessage(chatId, `📊 Hey there! I analyzed the last ${drawData.length} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
