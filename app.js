@@ -357,3 +357,85 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
         console.error("bot.onText /filter_draws [CODE] - Error fetching draw data: " + error.stack);
     }
 })
+
+/** 
+ * Creating sub menus
+ */
+
+const mainMenu = {
+    reply_markup:{
+        inline_keyboard: [
+            [{ text: "How do I use the FAQ Section?", callback_data: "how" }],
+            [{ text: "Learn about Provincial Nomination Programs", callback_data: "pnp" }],
+        ]
+    }
+};
+
+const justBackToMainMenu = {
+    reply_markup:{
+        inline_keyboard: [
+            [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+        ]
+    }
+}
+
+const backToPNPMenu = {
+    reply_markup:{
+        inline_keyboard: [
+            [{ text: "Back to PNP Menu", callback_data: "pnp" }],
+        ]
+    }
+}
+
+bot.onText(/\/faq/, (msg) => {
+    logger.logUserInteraction(bot, msg);
+    const chatId = msg.chat.id;
+
+    bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", mainMenu);
+})
+
+// Handle callback queries
+bot.on('callback_query', (query) =>{
+    const chatId = query.message.chat.id;
+
+    /**
+     * How do I use the FAQ Section?
+     */
+    if (query.data === "how"){
+        const subMenu = {
+            reply_markup:{
+                inline_keyboard: [
+                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                ]
+            }
+        };    
+        bot.sendMessage(chatId, "The FAQ Section is filled with resources regarding...", subMenu);
+    } else if (query.data === "pnp"){
+        const subMenu = {
+            reply_markup:{
+                inline_keyboard: [
+                    [{ text: "Alberta", callback_data: "alb" }],
+                    [{ text: "British Columbia", callback_data: "bc" }],
+                    [{ text: "Manitoba", callback_data: "man" }],
+                    [{ text: "New Brunswick", callback_data: "nb" }],
+                    [{ text: "Newfoundland and Labrador", callback_data: "nfl" }],
+                    [{ text: "Northwest Territories", callback_data: "nt" }],
+                    [{ text: "Nova Scotia", callback_data: "ns" }],
+                    [{ text: "Ontario", callback_data: "ont" }],
+                    [{ text: "Prince Edward Island", callback_data: "pei" }],
+                    [{ text: "Quebec", callback_data: "qc" }],
+                    [{ text: "Saskatchewan", callback_data: "sk" }],
+                    [{ text: "Yukon", callback_data: "yk" }],
+                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                ]
+            }
+        }
+        bot.sendMessage(chatId, "Provincial Nomination Programs (PNP) are...", subMenu);
+        
+    } else if (query.data === "alb"){
+        bot.sendMessage(chatId, "Alberta's Provincial Nomination Program (PNP) is... https://www.alberta.ca/alberta-advantage-immigration-program", backToPNPMenu);
+    }
+    else if (query.data === "main_menu"){
+        bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", mainMenu); 
+    }
+})
