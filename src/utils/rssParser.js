@@ -86,8 +86,6 @@ async function fetchIRCCFeed_Monthly(input_month){
 async function keywordSearchIRCCFeed(keyword){
     let feed = await fetchFullIRCCFeed();
 
-    
-
     // Filter item.title based on the keyword
     let keywordItems = feed.items.filter(item =>{
         return item.summary.toLowerCase().includes(keyword.toLowerCase());
