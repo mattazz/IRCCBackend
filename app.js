@@ -439,7 +439,7 @@ bot.on('callback_query', (query) =>{
     }
     else if (query.data === "ee_how"){
         bot.sendMessage(chatId, ```
-            There are 3 immigration programs managed through Express Entry:
+            <b>There are 3 immigration programs managed through Express Entry</b>:
             1. Federal Skilled Worker Program
             2. Federal Skilled Trades Program
             3. Canadian Experience Class
