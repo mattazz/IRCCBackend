@@ -54,4 +54,6 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 - [ ] Improve chart headline to include specific draw class
 - [ ] Improve styling of chart (red primary color)
 
-
+## Test Branches
+- [ ] FAQ Menu feat/faqmenu
+- [ ] Search news by keyword feat/menusearch
