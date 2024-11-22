@@ -247,7 +247,7 @@ bot.onText("/latest", async (msg) => {
 });
 
 
-bot.onText(/\/full (.+)/, async (msg) => {
+bot.onText("/full", async (msg) => {
     const chatId = msg.chat.id;
 
     logger.logUserInteraction(bot, msg);
