@@ -438,12 +438,12 @@ bot.on('callback_query', (query) =>{
         bot.sendMessage(chatId, "Express Entry is...", subMenu);
     }
     else if (query.data === "ee_how"){
-        bot.sendMessage(chatId, ```
+        bot.sendMessage(chatId, `
             <b>There are 3 immigration programs managed through Express Entry</b>:
             1. Federal Skilled Worker Program
             2. Federal Skilled Trades Program
             3. Canadian Experience Class
-            ```)
+            `)
         bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", backToEEMenu);
     }
 
