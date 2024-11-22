@@ -35,7 +35,7 @@ async function fetchFullIRCCFeed() {
         // console.log(item);
     })
     return feed
-    
+
 }
 
 /**
@@ -45,7 +45,7 @@ async function fetchFullIRCCFeed() {
  * @param {*} returnType [String or Number]. Default is number.
  * @returns  The month number or month string.
  */
-function validateUserMonthInput(input_month, returnType = "number"){
+function validateUserMonthInput(input_month, returnType = "number") {
     let input_month_lower = input_month.toLowerCase();
     let input_month_num = monthMapping[input_month_lower];
     if (input_month_num === undefined) {
@@ -54,7 +54,7 @@ function validateUserMonthInput(input_month, returnType = "number"){
 
     if (returnType === "string") {
         return input_month_lower;
-    } else{
+    } else {
         return input_month_num
     }
 }
@@ -65,7 +65,7 @@ function validateUserMonthInput(input_month, returnType = "number"){
  * @param {*} input_month The month to filter the news feed.
  * @returns {Promise<Array>} An array of objects containing the news feed for the specified month.
  */
-async function fetchIRCCFeed_Monthly(input_month){
+async function fetchIRCCFeed_Monthly(input_month) {
     let parser = new Parser
     let feed = await fetchFullIRCCFeed();
 
@@ -75,7 +75,7 @@ async function fetchIRCCFeed_Monthly(input_month){
     let currentYear = new Date().getFullYear();
 
     // Filter items based on the current month and year
-    let monthlyItems = feed.items.filter(item =>{
+    let monthlyItems = feed.items.filter(item => {
         let itemDate = new Date(item.pubDate);
         return itemDate.getMonth() === input_month_lower && itemDate.getFullYear() === currentYear;
     })
@@ -83,14 +83,14 @@ async function fetchIRCCFeed_Monthly(input_month){
     return monthlyItems
 }
 
-async function keywordSearchIRCCFeed(keyword){
+async function keywordSearchIRCCFeed(keyword) {
     let feed = await fetchFullIRCCFeed();
 
-    // Filter item.title based on the keyword
-    let keywordItems = feed.items.filter(item =>{
-        return item.summary.toLowerCase().includes(keyword.toLowerCase());
-    })
-
+    // Filter items based on the keyword in either the summary or title
+    let keywordItems = feed.items.filter(item => {
+        return item.summary.toLowerCase().includes(keyword.toLowerCase()) ||
+            item.title.toLowerCase().includes(keyword.toLowerCase());
+    });
 
     return keywordItems
 }

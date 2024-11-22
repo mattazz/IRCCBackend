@@ -102,7 +102,7 @@ bot.onText(/\/start/, (msg) => {
     News: 
     - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed
+    - /search_news [keyword] - Search for news by keyword (e.g., /search_news Express Entry)
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
@@ -139,7 +139,7 @@ bot.onText(/\/help/, (msg) => {
     News: 
     - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed
+    - /search_news [keyword] - Search for news by keyword (e.g., /search_news Express Entry)
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
@@ -249,7 +249,7 @@ bot.onText("/latest_news", async (msg) => {
 
 bot.onText(/\/search_news (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
-    const keyword = match[1]; //captured regex response
+    const keyword = match[1]; //captured regex response    
 
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
