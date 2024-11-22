@@ -367,6 +367,7 @@ const mainMenu = {
         inline_keyboard: [
             [{ text: "How do I use the FAQ Section?", callback_data: "how" }],
             [{ text: "Learn about Provincial Nomination Programs", callback_data: "pnp" }],
+            [{ text: "Immigrating through Express Entry", callback_data: "ee" }],
         ]
     }
 };
@@ -383,6 +384,14 @@ const backToPNPMenu = {
     reply_markup:{
         inline_keyboard: [
             [{ text: "Back to PNP Menu", callback_data: "pnp" }],
+        ]
+    }
+}
+
+const backToEEMenu = {
+    reply_markup:{
+        inline_keyboard: [
+            [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
         ]
     }
 }
@@ -410,7 +419,38 @@ bot.on('callback_query', (query) =>{
             }
         };    
         bot.sendMessage(chatId, "The FAQ Section is filled with resources regarding...", subMenu);
-    } else if (query.data === "pnp"){
+    } 
+    /**
+     * Immigrating through Express Entry
+     */
+
+    else if(query.data === "ee") {
+        const subMenu = {
+            reply_markup:{
+                inline_keyboard:[
+                    [{ text: "How does Express Entry?", callback_data: "ee_how" }],
+                    [{ text: "What are the requirements?", callback_data: "ee_req" }],
+                    [{ text: "How to improve my CRS score?", callback_data: "ee_crs" }],
+                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                ]
+            }
+        }
+        bot.sendMessage(chatId, "Express Entry is...", subMenu);
+    }
+    else if (query.data === "ee_how"){
+        bot.sendMessage(chatId, ```
+            There are 3 immigration programs managed through Express Entry:
+            1. Federal Skilled Worker Program
+            2. Federal Skilled Trades Program
+            3. Canadian Experience Class
+            ```)
+        bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", backToEEMenu);
+    }
+
+    /**
+     * Learn about Provincial Nomination Programs
+     */
+    else if (query.data === "pnp"){
         const subMenu = {
             reply_markup:{
                 inline_keyboard: [
