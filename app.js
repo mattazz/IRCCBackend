@@ -31,7 +31,7 @@ app.listen(port, () => {
 })
 
 /** Changes URL and Token to be used */
-const devMode = process.env.DEV_MODE  === 'true'
+const devMode = process.env.DEV_MODE === 'true'
 console.log("Setting Dev Mode:" + devMode);
 
 
@@ -77,7 +77,7 @@ bot.on('webhook_error', (error) => {
 });
 
 bot.on('message', (msg) => {
-    
+
     logger.logUserInteraction(bot, msg);
 })
 
@@ -128,7 +128,7 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/help/, (msg) => {
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
-    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);   
+    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
 
     const chatId = msg.chat.id;
     const introMessage = `
@@ -197,7 +197,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
             await bot.sendMessage(chatId, "⁉ No news found for the month of " + input_month + " " + new Date().getFullYear());
             return
         } else {
-            await bot.sendMessage(chatId, "🇨🇦 Here are the news for the month of " + input_month + " " + new Date().getFullYear()+ " 🇨🇦");
+            await bot.sendMessage(chatId, "🇨🇦 Here are the news for the month of " + input_month + " " + new Date().getFullYear() + " 🇨🇦");
         }
 
         // Send Message, iterate and send one message per item
@@ -309,7 +309,7 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
 bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const filterCode = match[1]; //captured regex response
-    
+
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
     logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
@@ -336,7 +336,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
         let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
 
         // console.log(analyzedData);
-        
+
 
 
         if (analyzedData.length < 2) {
@@ -344,10 +344,10 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
             return
         } else if (analyzedData.length == 0) {
             await bot.sendMessage(chatId, "⁉ There is no subclass data to analyze the rolling average CRS.");
-            return 
+            return
         }
 
-        let img_buffer = await chartGenerator.createChartForRolling(chatId, token,drawData, analyzedData, `Rolling Average CRS for ${filterCode}`);
+        let img_buffer = await chartGenerator.createChartForRolling(chatId, token, drawData, analyzedData, `Rolling Average CRS for ${filterCode}`);
 
         // Send message and photo
         bot.sendMessage(chatId, `📊 Hey there! I analyzed the last ${drawData.length} draws from ${drawData[drawData.length - 1].date} to ${drawData[0].date}. Here's the rolling average CRS for the last ${drawData.length} draws.`);
@@ -362,73 +362,78 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
  * Creating sub menus
  */
 
-const mainMenu = {
-    reply_markup:{
-        inline_keyboard: [
-            [{ text: "How do I use the FAQ Section?", callback_data: "how" }],
-            [{ text: "Learn about Provincial Nomination Programs", callback_data: "pnp" }],
-            [{ text: "Immigrating through Express Entry", callback_data: "ee" }],
-        ]
-    }
-};
-
-const justBackToMainMenu = {
-    reply_markup:{
-        inline_keyboard: [
-            [{ text: "Back to Main Menu", callback_data: "main_menu" }],
-        ]
+const menuContainer = {
+    mainMenu: {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: "How do I use the FAQ Section?", callback_data: "how" }],
+                [{ text: "Learn about Provincial Nomination Programs", callback_data: "pnp" }],
+                [{ text: "Immigrating through Express Entry", callback_data: "ee" }],
+            ]
+        }
+    },
+    justBackToMainMenu : {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+            ]
+        }
+    },
+    backToPNPMenu : {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: "Back to PNP Menu", callback_data: "pnp" }],
+                [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+            ]
+        }
+    },
+    backToEEMenu : {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
+                [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+            ]
+        }
     }
 }
 
-const backToPNPMenu = {
-    reply_markup:{
-        inline_keyboard: [
-            [{ text: "Back to PNP Menu", callback_data: "pnp" }],
-            [{ text: "Back to Main Menu", callback_data: "main_menu" }],
-        ]
-    }
-}
 
-const backToEEMenu = {
-    reply_markup:{
-        inline_keyboard: [
-            [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
-            [{ text: "Back to Main Menu", callback_data: "main_menu" }],
-        ]
-    }
-}
+
+
+
+ 
 bot.onText(/\/faq/, (msg) => {
     logger.logUserInteraction(bot, msg);
     const chatId = msg.chat.id;
 
-    bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", mainMenu);
+    bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", menuContainer.mainMenu);
 })
 
 // Handle callback queries
-bot.on('callback_query', async (query) =>{
+bot.on('callback_query', async (query) => {
     const chatId = query.message.chat.id;
 
     /**
      * How do I use the FAQ Section?
      */
-    if (query.data === "how"){
+    if (query.data === "how") {
         const subMenu = {
-            reply_markup:{
+            reply_markup: {
                 inline_keyboard: [
                     [{ text: "Back to Main Menu", callback_data: "main_menu" }],
                 ]
             }
-        };    
+        };
         bot.sendMessage(chatId, "The FAQ Section is filled with resources regarding...", subMenu);
-    } 
+    }
     /**
      * Immigrating through Express Entry
      */
 
-    else if(query.data === "ee") {
+    else if (query.data === "ee") {
         const subMenu = {
-            reply_markup:{
-                inline_keyboard:[
+            reply_markup: {
+                inline_keyboard: [
                     [{ text: "How does Express Entry work?", callback_data: "ee_how" }],
                     [{ text: "What are the requirements?", callback_data: "ee_req" }],
                     [{ text: "How to improve my CRS score?", callback_data: "ee_crs" }],
@@ -438,22 +443,22 @@ bot.on('callback_query', async (query) =>{
         }
         await bot.sendMessage(chatId, "Express Entry is...", subMenu);
     }
-    else if (query.data === "ee_how"){
+    else if (query.data === "ee_how") {
         await bot.sendMessage(chatId, `
             <b>There are 3 immigration programs managed through Express Entry</b>:
             1. Federal Skilled Worker Program
             2. Federal Skilled Trades Program
             3. Canadian Experience Class
-            `, {parse_mode: "HTML"});
-        await bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", backToEEMenu);
+            `, { parse_mode: "HTML" });
+        await bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", menuContainer.backToEEMenu);
     }
 
     /**
      * Learn about Provincial Nomination Programs
      */
-    else if (query.data === "pnp"){
+    else if (query.data === "pnp") {
         const subMenu = {
-            reply_markup:{
+            reply_markup: {
                 inline_keyboard: [
                     [{ text: "Alberta", callback_data: "alb" }],
                     [{ text: "British Columbia", callback_data: "bc" }],
@@ -472,32 +477,32 @@ bot.on('callback_query', async (query) =>{
             }
         }
         bot.sendMessage(chatId, "Provincial Nomination Programs (PNP) are...", subMenu);
-        
-    } else if (query.data === "alb"){
-        bot.sendMessage(chatId, "Alberta's Provincial Nomination Program (PNP) is... https://www.alberta.ca/alberta-advantage-immigration-program", backToPNPMenu);
-    } else if (query.data === "bc"){
-        bot.sendMessage(chatId, "British Columbia's Provincial Nomination Program (PNP) is... https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program", backToPNPMenu);
-    } else if ( query.data === "man"){
-        bot.sendMessage(chatId, "Manitoba's Provincial Nomination Program (PNP) is... https://www.immigratemanitoba.com/", backToPNPMenu);
-    } else if ( query.data === " nb"){
-        bot.sendMessage(chatId, "New Brunswick's Provincial Nomination Program (PNP) is... https://www2.gnb.ca/content/gnb/en/corporate/promo/immigration/immigrating-to-nb/nb-immigration-program-streams.html", backToPNPMenu);
-    } else if ( query.data === "nfl"){
-        bot.sendMessage(chatId, "Newfoundland and Labrador's Provincial Nomination Program (PNP) is... https://www.gov.nl.ca/immigration/immigrating-to-newfoundland-and-labrador/provincial-nominee-program/overview/", backToPNPMenu);
-    } else if ( query.data === "nt"){
-        bot.sendMessage(chatId, "Northwest Territories' Provincial Nomination Program (PNP) is... https://www.immigratenwt.ca/immigrate-here", backToPNPMenu);
-    } else if ( query.data === "ns"){
-        bot.sendMessage(chatId, "Nova Scotia's Provincial Nomination Program (PNP) is... https://liveinnovascotia.com/nova-scotia-nominee-program/", backToPNPMenu);
-    } else if ( query.data === "ont"){
-        bot.sendMessage(chatId, "Ontario's Provincial Nomination Program (PNP) is... https://www.ontario.ca/page/immigrate-to-ontario", backToPNPMenu);
-    } else if ( query.data === "pei"){
-        bot.sendMessage(chatId, "Prince Edward Island's Provincial Nomination Program (PNP) is... https://www.princeedwardisland.ca/en/information/office-of-immigration/provincial-nominee-program", backToPNPMenu);
-    } else if ( query.data === "qc"){
-        bot.sendMessage(chatId, "Quebec's Provincial Nomination Program (PNP) is... https://www.quebec.ca/en/immigration/permanent/skilled-workers/regular-skilled-worker-program", backToPNPMenu);
-    } else if ( query.data === "sk"){
-        bot.sendMessage(chatId, "Saskatchewan's Provincial Nomination Program (PNP) is... https://www.saskatchewan.ca/residents/moving-to-saskatchewan", backToPNPMenu);
-    } else if ( query.data === "yk"){
-        bot.sendMessage(chatId, "Yukon's Provincial Nomination Program (PNP) is... https://yukon.ca/immigrate-yukon", backToPNPMenu);
-    } else if (query.data === "main_menu"){
-        bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", mainMenu); 
+
+    } else if (query.data === "alb") {
+        bot.sendMessage(chatId, "Alberta's Provincial Nomination Program (PNP) is... https://www.alberta.ca/alberta-advantage-immigration-program", menuContainer.backToPNPMenu);
+    } else if (query.data === "bc") {
+        bot.sendMessage(chatId, "British Columbia's Provincial Nomination Program (PNP) is... https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program", menuContainer.backToPNPMenu);
+    } else if (query.data === "man") {
+        bot.sendMessage(chatId, "Manitoba's Provincial Nomination Program (PNP) is... https://www.immigratemanitoba.com/", menuContainer.backToPNPMenu);
+    } else if (query.data === " nb") {
+        bot.sendMessage(chatId, "New Brunswick's Provincial Nomination Program (PNP) is... https://www2.gnb.ca/content/gnb/en/corporate/promo/immigration/immigrating-to-nb/nb-immigration-program-streams.html", menuContainer.backToPNPMenu);
+    } else if (query.data === "nfl") {
+        bot.sendMessage(chatId, "Newfoundland and Labrador's Provincial Nomination Program (PNP) is... https://www.gov.nl.ca/immigration/immigrating-to-newfoundland-and-labrador/provincial-nominee-program/overview/", menuContainer.backToPNPMenu);
+    } else if (query.data === "nt") {
+        bot.sendMessage(chatId, "Northwest Territories' Provincial Nomination Program (PNP) is... https://www.immigratenwt.ca/immigrate-here", menuContainer.backToPNPMenu);
+    } else if (query.data === "ns") {
+        bot.sendMessage(chatId, "Nova Scotia's Provincial Nomination Program (PNP) is... https://liveinnovascotia.com/nova-scotia-nominee-program/", menuContainer.backToPNPMenu);
+    } else if (query.data === "ont") {
+        bot.sendMessage(chatId, "Ontario's Provincial Nomination Program (PNP) is... https://www.ontario.ca/page/immigrate-to-ontario", menuContainer.backToPNPMenu);
+    } else if (query.data === "pei") {
+        bot.sendMessage(chatId, "Prince Edward Island's Provincial Nomination Program (PNP) is... https://www.princeedwardisland.ca/en/information/office-of-immigration/provincial-nominee-program", menuContainer.backToPNPMenu);
+    } else if (query.data === "qc") {
+        bot.sendMessage(chatId, "Quebec's Provincial Nomination Program (PNP) is... https://www.quebec.ca/en/immigration/permanent/skilled-workers/regular-skilled-worker-program", menuContainer.backToPNPMenu);
+    } else if (query.data === "sk") {
+        bot.sendMessage(chatId, "Saskatchewan's Provincial Nomination Program (PNP) is... https://www.saskatchewan.ca/residents/moving-to-saskatchewan", menuContainer.backToPNPMenu);
+    } else if (query.data === "yk") {
+        bot.sendMessage(chatId, "Yukon's Provincial Nomination Program (PNP) is... https://yukon.ca/immigrate-yukon", menuContainer.backToPNPMenu);
+    } else if (query.data === "main_menu") {
+        bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", menuContainer.mainMenu);
     }
 })
