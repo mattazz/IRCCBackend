@@ -384,6 +384,7 @@ const backToPNPMenu = {
     reply_markup:{
         inline_keyboard: [
             [{ text: "Back to PNP Menu", callback_data: "pnp" }],
+            [{ text: "Back to Main Menu", callback_data: "main_menu" }],
         ]
     }
 }
@@ -392,10 +393,10 @@ const backToEEMenu = {
     reply_markup:{
         inline_keyboard: [
             [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
+            [{ text: "Back to Main Menu", callback_data: "main_menu" }],
         ]
     }
 }
-
 bot.onText(/\/faq/, (msg) => {
     logger.logUserInteraction(bot, msg);
     const chatId = msg.chat.id;
