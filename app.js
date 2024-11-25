@@ -453,6 +453,8 @@ bot.on('callback_query', async (query) => {
         await bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", menuContainer.backToEEMenu);
     }
 
+    
+
     /**
      * Learn about Provincial Nomination Programs
      */
