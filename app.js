@@ -436,7 +436,8 @@ bot.on('callback_query', async (query) => {
         const subMenu = {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: "What are the requirements?", callback_data: "ee_req" }],
+                    [{ text: "What are the general requirements for Express Entry?", callback_data: "ee_req" }],
+                    [{ text: "What are the Express Entry programs available?", callback_data: "ee_progs" }],
                     [{ text: "How do I improve my CRS score?", callback_data: "ee_crs" }],
                     [{ text: "Back to Main Menu", callback_data: "main_menu" }],
                 ]
@@ -458,7 +459,57 @@ There are 3 immigration programs managed through Express Entry:
      * 
      */
     else if (query.data === "ee_req") {
-        await bot.sendMessage(chatId, `To be eligible for Express Entry, you must meet the requirements:`, menuContainer.backToEEMenu);
+        await bot.sendMessage(chatId, `To be eligible for Express Entry, you must meet certain requirements provided by the government.
+
+These requirements are based on factors such as:
+✅ nationality
+✅ age
+✅ language ability
+✅ family members
+✅ education
+✅ work experience
+✅ available funds
+✅ details on any job offer
+            `);
+    
+        await bot.sendMessage(chatId, `🛠️ IRCC provides an eligibility tool where you will be asked certain questions to determine eligibility.
+
+You can find the tool here: https://www.canada.ca/en/immigration-refugees-citizenship/services/come-canada-tool-immigration-express-entry.html
+`, menuContainer.backToEEMenu);
+}
+
+    else if (query.data === "ee_progs") {
+        const subMenu = {
+            reply_markup:{
+                inline_keyboard: [
+                    [{ text: "Canadian Experience Class", callback_data: "cec" }],
+                    [{ text: "Federal Skilled Worker Program", callback_data: "fsw" }],
+                    [{ text: "Federal Skilled Trades Program", callback_data: "fst" }],
+                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                ]
+            }
+        }
+
+        await bot.sendMessage(chatId, `
+        🇨🇦 There are 3 immigration programs managed through Express Entry:
+
+✅ Canadian Experience Class
+✅ Federal Skilled Worker Program
+✅ Federal Skilled Trades Program
+`, subMenu)
+    }
+    /**
+     * Fill in this part
+     */
+
+    else if (query.data === "cec") {
+        await bot.sendMessage(chatId, `🇨🇦 The Canadian Experience Class`, menuContainer.backToEEMenu)
+    }
+    else if (query.data === "fsw") {
+        await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`, menuContainer.backToEEMenu)
+    }
+    else if (query.data === "fst") {
+        await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`, menuContainer.backToEEMenu)
     }
 
     /**
