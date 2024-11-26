@@ -68,7 +68,8 @@ bot.setMyCommands([
     { command: '/full', description: 'Get the full news feed' },
     { command: '/last_draws', description: 'Get the last 5 IRCC draws' },
     { command: '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)' },
-    { command: '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)' }
+    { command: '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)' },
+    {command: '/faq', description: 'Open the submenu for the frequently asked questions resources.'}
 ]);
 
 // Log all errors
@@ -102,6 +103,9 @@ bot.onText(/\/start/, (msg) => {
     - /latest - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
     - /full - Get the full news feed
+
+    FAQ:
+    - /faq - Open the submenu for the frequently asked questions resources. 
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
@@ -139,6 +143,9 @@ bot.onText(/\/help/, (msg) => {
     - /latest - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
     - /full - Get the full news feed
+
+    FAQ:
+    - /faq - Open the submenu for the frequently asked questions resources. 
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
@@ -367,8 +374,8 @@ const menuContainer = {
         reply_markup: {
             inline_keyboard: [
                 [{ text: "How do I use the FAQ Section?", callback_data: "how" }],
-                [{ text: "Learn about Provincial Nomination Programs", callback_data: "pnp" }],
                 [{ text: "Immigrating through Express Entry", callback_data: "ee" }],
+                [{ text: "Learn about Provincial Nomination Programs", callback_data: "pnp" }],
             ]
         }
     },
@@ -469,7 +476,7 @@ There are 3 immigration programs managed through Express Entry:
                 ]
             }
         }
-        await bot.sendMessage(chatId, "Provincial Nomination Programs (PNP) are...", subMenu);
+        await bot.sendMessage(chatId, "Which Provincial Nomination Program do you want to know more about?", subMenu);
 
     } else if (query.data === "alb") {
         await bot.sendMessage(chatId, `
