@@ -437,7 +437,7 @@ bot.on('callback_query', async (query) => {
             reply_markup: {
                 inline_keyboard: [
                     [{ text: "What are the requirements?", callback_data: "ee_req" }],
-                    [{ text: "How to improve my CRS score?", callback_data: "ee_crs" }],
+                    [{ text: "How do I improve my CRS score?", callback_data: "ee_crs" }],
                     [{ text: "Back to Main Menu", callback_data: "main_menu" }],
                 ]
             }
