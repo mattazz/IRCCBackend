@@ -451,8 +451,16 @@ There are 3 immigration programs managed through Express Entry:
 ✅ Federal Skilled Trades Program
 `);
         await bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", subMenu);
-
     }
+    /**
+     * EE Requirements
+     * [ ] Fill in requirements
+     * 
+     */
+    else if (query.data === "ee_req") {
+        await bot.sendMessage(chatId, `To be eligible for Express Entry, you must meet the requirements:`, menuContainer.backToEEMenu);
+    }
+
     /**
      * Learn about Provincial Nomination Programs
      */
