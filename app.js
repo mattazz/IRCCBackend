@@ -397,11 +397,6 @@ const menuContainer = {
     }
 }
 
-
-
-
-
- 
 bot.onText(/\/faq/, (msg) => {
     logger.logUserInteraction(bot, msg);
     const chatId = msg.chat.id;
@@ -478,33 +473,84 @@ bot.on('callback_query', async (query) => {
                 ]
             }
         }
-        bot.sendMessage(chatId, "Provincial Nomination Programs (PNP) are...", subMenu);
+        await bot.sendMessage(chatId, "Provincial Nomination Programs (PNP) are...", subMenu);
 
     } else if (query.data === "alb") {
-        bot.sendMessage(chatId, "Alberta's Provincial Nomination Program (PNP) is... https://www.alberta.ca/alberta-advantage-immigration-program", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, `
+            🇨🇦 The Alberta Advantage Immigration Program (AAIP) is an economic immigration program that nominates people for permanent residence in Alberta. Nominees must have skills to fill job shortages or be planning to buy or start a business in Alberta. They must also be able to provide for their families. The program is run by the governments of Alberta and Canada.
+            
+If you are nominated through the program, you may apply for permanent residence status together with your spouse or common-law partner, and dependent children.`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Alberta's Provincial Nomination Program (PNP) here: https://www.alberta.ca/alberta-advantage-immigration-program", menuContainer.backToPNPMenu);
     } else if (query.data === "bc") {
-        bot.sendMessage(chatId, "British Columbia's Provincial Nomination Program (PNP) is... https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId,`
+            🇨🇦 The BC Provincial Nominee Program (BC PNP) is an economic immigration program. It lets the Province select economic immigrants who will live in B.C. and help fill job vacancies or operate businesses.
+
+If you are nominated, you and your family can apply to Immigration, Refugees and Citizenship Canada (IRCC) for permanent residence in Canada.`)
+        await bot.sendMessage(chatId, "🧐 You can find more about British Columbia's Provincial Nomination Program (PNP): https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program", menuContainer.backToPNPMenu);
     } else if (query.data === "man") {
-        bot.sendMessage(chatId, "Manitoba's Provincial Nomination Program (PNP) is... https://www.immigratemanitoba.com/", menuContainer.backToPNPMenu);
-    } else if (query.data === " nb") {
-        bot.sendMessage(chatId, "New Brunswick's Provincial Nomination Program (PNP) is... https://www2.gnb.ca/content/gnb/en/corporate/promo/immigration/immigrating-to-nb/nb-immigration-program-streams.html", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId,`
+            🇨🇦 The Manitoba Provincial Nominee Program (MPNP) offers three streams, with their respective pathways, through which you can immigrate to the province of Manitoba and become a permanent resident of Canada.
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Manitoba's Provincial Nomination Program (PNP) here: https://www.immigratemanitoba.com/", menuContainer.backToPNPMenu);
+    } else if (query.data === "nb") {
+        await bot.sendMessage(chatId,`
+            🇨🇦 New Brunswick’s immigration program streams are pathways to permanent residence (PR) for foreign workers who have the skills, education, and work experience necessary to successfully contribute to New Brunswick’s economy.
+
+When applying to many of these programs, you must be PR ready. This means that you meet all minimum eligibility requirements and have all the required documents on hand to prepare and submit a complete and correct application to the province of New Brunswick and to the Government of Canada.
+
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about New Brunswick's Provincial Nomination Program (PNP) here: https://www2.gnb.ca/content/gnb/en/corporate/promo/immigration/immigrating-to-nb/nb-immigration-program-streams.html", menuContainer.backToPNPMenu);
     } else if (query.data === "nfl") {
-        bot.sendMessage(chatId, "Newfoundland and Labrador's Provincial Nomination Program (PNP) is... https://www.gov.nl.ca/immigration/immigrating-to-newfoundland-and-labrador/provincial-nominee-program/overview/", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, `
+            🇨🇦 The Newfoundland and Labrador Provincial Nominee Program (NLPNP) is an economic immigration program intended for:
+
+✅ Newfoundland and Labrador employers with labour market challenges
+✅ Skilled workers, international graduates and entrepreneurs interested in settling in Newfoundland and Labrador
+
+The Newfoundland and Labrador Provincial Nominee Program (NLPNP) facilitates the immigration of individuals who can make a positive contribution to the province’s economy and who intend to permanently settle with their families in the province of Newfoundland and Labrador. Successful applicants may become permanent residents of Canada.
+
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Newfoundland and Labrador's Provincial Nomination Program (PNP) here: https://www.gov.nl.ca/immigration/immigrating-to-newfoundland-and-labrador/provincial-nominee-program/overview/", menuContainer.backToPNPMenu);
     } else if (query.data === "nt") {
-        bot.sendMessage(chatId, "Northwest Territories' Provincial Nomination Program (PNP) is... https://www.immigratenwt.ca/immigrate-here", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, "🧐 You can find more about Northwest Territories' Provincial Nomination Program (PNP) here: https://www.immigratenwt.ca/immigrate-here", menuContainer.backToPNPMenu);
     } else if (query.data === "ns") {
-        bot.sendMessage(chatId, "Nova Scotia's Provincial Nomination Program (PNP) is... https://liveinnovascotia.com/nova-scotia-nominee-program/", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, `
+            🇨🇦 Once you're ready to move to beautiful Nova Scotia you will want to apply to a Nova Scotia Nominee Program (NSNP) stream. Through the NSNP, prospective immigrants who have the skills and experience needed by Nova Scotia employers may be nominated to immigrate.
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Nova Scotia's Provincial Nomination Program (PNP) here: https://liveinnovascotia.com/nova-scotia-nominee-program/", menuContainer.backToPNPMenu);
     } else if (query.data === "ont") {
-        bot.sendMessage(chatId, "Ontario's Provincial Nomination Program (PNP) is... https://www.ontario.ca/page/immigrate-to-ontario", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId,`
+            🇨🇦 The OINP nominates foreign workers, entrepreneurs and international students to the Government of Canada for permanent residence in Ontario.
+
+Ontario's economic immigration program works in partnership with the Canadian government's immigration pathways.
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Ontario's Provincial Nomination Program (PNP) here: https://www.ontario.ca/page/immigrate-to-ontario", menuContainer.backToPNPMenu);
     } else if (query.data === "pei") {
-        bot.sendMessage(chatId, "Prince Edward Island's Provincial Nomination Program (PNP) is... https://www.princeedwardisland.ca/en/information/office-of-immigration/provincial-nominee-program", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, `🇨🇦 If you are seeking permanent residency in Prince Edward Island, one pathway is to be nominated to the federal government through the PEI Provincial Nominee Program (PNP). Individuals are selected for nomination based on their intention to live and work in PEI and their economic ability to establish here. At this time, priority will be given to entrepreneurs and to individuals qualified to work in areas with identified skill shortages in the PEI labour market.
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Prince Edward Island's Provincial Nomination Program (PNP) here: https://www.princeedwardisland.ca/en/information/office-of-immigration/provincial-nominee-program", menuContainer.backToPNPMenu);
     } else if (query.data === "qc") {
-        bot.sendMessage(chatId, "Quebec's Provincial Nomination Program (PNP) is... https://www.quebec.ca/en/immigration/permanent/skilled-workers/regular-skilled-worker-program", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, `🇨🇦 This program is for people who wish to immigrate to Québec as a skilled worker, whether they are in Québec or abroad.
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Quebec's Provincial Nomination Program (PNP) here: https://www.quebec.ca/en/immigration/permanent/skilled-workers/regular-skilled-worker-program", menuContainer.backToPNPMenu);
     } else if (query.data === "sk") {
-        bot.sendMessage(chatId, "Saskatchewan's Provincial Nomination Program (PNP) is... https://www.saskatchewan.ca/residents/moving-to-saskatchewan", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, "🧐 You can find more about Saskatchewan's Provincial Nomination Program (PNP) here: https://www.saskatchewan.ca/residents/moving-to-saskatchewan/live-in-saskatchewan/by-immigrating/saskatchewan-immigrant-nominee-program", menuContainer.backToPNPMenu);
     } else if (query.data === "yk") {
-        bot.sendMessage(chatId, "Yukon's Provincial Nomination Program (PNP) is... https://yukon.ca/immigrate-yukon", menuContainer.backToPNPMenu);
+        await bot.sendMessage(chatId, `
+            🇨🇦 The Yukon Nominee Program accepts applications for nominee candidates both inside and outside of Canada. To qualify for the Yukon Nominee Program, you must:
+
+✅ have a full-time and year-round job offer from an eligible Yukon employer; and
+✅ meet the specific criteria of your application stream.
+
+To qualify for the Yukon Business Nominee Program, you must meet the eligibility requirements.
+
+You are not eligible if you're:
+
+❌ a refugee claimant; or
+❌ inadmissible to Canada.
+`)
+        await bot.sendMessage(chatId, "🧐 You can find more about Yukon's Provincial Nomination Program (PNP) here: https://yukon.ca/immigrate-yukon", menuContainer.backToPNPMenu);
     } else if (query.data === "main_menu") {
-        bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", menuContainer.mainMenu);
+        await bot.sendMessage(chatId, "🤖🇨🇦 Welcome to the IRCC News Bot FAQ! 🇨🇦🤖", menuContainer.mainMenu);
     }
 })
