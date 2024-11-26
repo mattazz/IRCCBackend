@@ -513,7 +513,23 @@ You can find the tool here: https://www.canada.ca/en/immigration-refugees-citize
 
     else if (query.data === "cec") {
 
-        await bot.sendMessage(chatId, `🇨🇦 The Canadian Experience Class`, menuContainer.backToEEPrograms)
+
+        await bot.sendMessage(chatId, `🇨🇦 The Canadian Experience Class 🇨🇦
+            
+The Canadian Experience Class is for skilled workers who have Canadian work experience and want to become permanent residents.
+
+> To be eligible, you must meet all the minimum requirements for:
+
+✅ Canadian skilled work experience
+✅ language ability
+
+> There is no education requirement for the Canadian Experience Class but you can earn points for education if you have it.
+
+✅ If you went to school in Canada, you can get points for a certificate, diploma or degree from a Canadian
+✅ If you have foreign education 
+
+> You must be admissible to Canada.
+`, menuContainer.backToEEPrograms)
     }
     else if (query.data === "fsw") {
 
