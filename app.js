@@ -405,7 +405,7 @@ const menuContainer = {
     backToEEPrograms: {
         reply_markup: {
             inline_keyboard: [
-                [{ text: "⏪ Back to Express Entry Programs", callback_data: "ee_programs" }],
+                [{ text: "⏪ Back to Express Entry Programs", callback_data: "ee_progs" }],
                 [{ text: "⏪ Back to Express Entry Menu", callback_data: "ee" }],
                 [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
             ]
