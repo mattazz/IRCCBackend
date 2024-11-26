@@ -503,13 +503,43 @@ You can find the tool here: https://www.canada.ca/en/immigration-refugees-citize
      */
 
     else if (query.data === "cec") {
-        await bot.sendMessage(chatId, `🇨🇦 The Canadian Experience Class`, menuContainer.backToEEMenu)
+        const subMenu = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "Back to Express Entry Programs", callback_data: "ee_programs" }],
+                    [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
+                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                ]
+            }
+        }
+
+        await bot.sendMessage(chatId, `🇨🇦 The Canadian Experience Class`, subMenu)
     }
     else if (query.data === "fsw") {
-        await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`, menuContainer.backToEEMenu)
+        const subMenu = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "Back to Express Entry Programs", callback_data: "ee_programs" }],
+                    [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
+                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                ]
+            }
+        }
+
+        await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`, subMenu)
     }
     else if (query.data === "fst") {
-        await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`, menuContainer.backToEEMenu)
+        const subMenu = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "Back to Express Entry Programs", callback_data: "ee_programs" }],
+                    [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
+                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                ]
+            }
+        }
+        
+        await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`, subMenu)
     }
 
     /**
