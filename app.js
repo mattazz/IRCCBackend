@@ -69,7 +69,7 @@ bot.setMyCommands([
     { command: '/last_draws', description: 'Get the last 5 IRCC draws' },
     { command: '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)' },
     { command: '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)' },
-    {command: '/faq', description: 'Open the submenu for the frequently asked questions resources.'}
+    { command: '/faq', description: 'Open the submenu for the frequently asked questions resources.' }
 ]);
 
 // Log all errors
@@ -379,26 +379,35 @@ const menuContainer = {
             ]
         }
     },
-    justBackToMainMenu : {
+    justBackToMainMenu: {
         reply_markup: {
             inline_keyboard: [
-                [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
             ]
         }
     },
-    backToPNPMenu : {
+    backToPNPMenu: {
         reply_markup: {
             inline_keyboard: [
-                [{ text: "Back to PNP Menu", callback_data: "pnp" }],
-                [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                [{ text: "⏪ Back to PNP Menu", callback_data: "pnp" }],
+                [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
             ]
         }
     },
-    backToEEMenu : {
+    backToEEMenu: {
         reply_markup: {
             inline_keyboard: [
-                [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
-                [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                [{ text: "⏪ Back to Express Entry Menu", callback_data: "ee" }],
+                [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
+            ]
+        }
+    },
+    backToEEPrograms: {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: "⏪ Back to Express Entry Programs", callback_data: "ee_programs" }],
+                [{ text: "⏪ Back to Express Entry Menu", callback_data: "ee" }],
+                [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
             ]
         }
     }
@@ -422,7 +431,7 @@ bot.on('callback_query', async (query) => {
         const subMenu = {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                    [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
                 ]
             }
         };
@@ -471,21 +480,21 @@ These requirements are based on factors such as:
 ✅ available funds
 ✅ details on any job offer
             `);
-    
+
         await bot.sendMessage(chatId, `🛠️ IRCC provides an eligibility tool where you will be asked certain questions to determine eligibility.
 
 You can find the tool here: https://www.canada.ca/en/immigration-refugees-citizenship/services/come-canada-tool-immigration-express-entry.html
 `, menuContainer.backToEEMenu);
-}
+    }
 
     else if (query.data === "ee_progs") {
         const subMenu = {
-            reply_markup:{
+            reply_markup: {
                 inline_keyboard: [
                     [{ text: "Canadian Experience Class", callback_data: "cec" }],
                     [{ text: "Federal Skilled Worker Program", callback_data: "fsw" }],
                     [{ text: "Federal Skilled Trades Program", callback_data: "fst" }],
-                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                    [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
                 ]
             }
         }
@@ -503,43 +512,16 @@ You can find the tool here: https://www.canada.ca/en/immigration-refugees-citize
      */
 
     else if (query.data === "cec") {
-        const subMenu = {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "Back to Express Entry Programs", callback_data: "ee_programs" }],
-                    [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
-                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
-                ]
-            }
-        }
 
-        await bot.sendMessage(chatId, `🇨🇦 The Canadian Experience Class`, subMenu)
+        await bot.sendMessage(chatId, `🇨🇦 The Canadian Experience Class`, menuContainer.backToEEPrograms)
     }
     else if (query.data === "fsw") {
-        const subMenu = {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "Back to Express Entry Programs", callback_data: "ee_programs" }],
-                    [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
-                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
-                ]
-            }
-        }
 
-        await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`, subMenu)
+        await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`, menuContainer.backToEEPrograms)
     }
     else if (query.data === "fst") {
-        const subMenu = {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "Back to Express Entry Programs", callback_data: "ee_programs" }],
-                    [{ text: "Back to Express Entry Menu", callback_data: "ee" }],
-                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
-                ]
-            }
-        }
-        
-        await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`, subMenu)
+
+        await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`, menuContainer.backToEEPrograms)
     }
 
     /**
@@ -574,18 +556,18 @@ You can find the tool here: https://www.canada.ca/en/immigration-refugees-citize
 If you are nominated through the program, you may apply for permanent residence status together with your spouse or common-law partner, and dependent children.`)
         await bot.sendMessage(chatId, "🧐 You can find more about Alberta's Provincial Nomination Program (PNP) here: https://www.alberta.ca/alberta-advantage-immigration-program", menuContainer.backToPNPMenu);
     } else if (query.data === "bc") {
-        await bot.sendMessage(chatId,`
+        await bot.sendMessage(chatId, `
             🇨🇦 The BC Provincial Nominee Program (BC PNP) is an economic immigration program. It lets the Province select economic immigrants who will live in B.C. and help fill job vacancies or operate businesses.
 
 If you are nominated, you and your family can apply to Immigration, Refugees and Citizenship Canada (IRCC) for permanent residence in Canada.`)
         await bot.sendMessage(chatId, "🧐 You can find more about British Columbia's Provincial Nomination Program (PNP): https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program", menuContainer.backToPNPMenu);
     } else if (query.data === "man") {
-        await bot.sendMessage(chatId,`
+        await bot.sendMessage(chatId, `
             🇨🇦 The Manitoba Provincial Nominee Program (MPNP) offers three streams, with their respective pathways, through which you can immigrate to the province of Manitoba and become a permanent resident of Canada.
 `)
         await bot.sendMessage(chatId, "🧐 You can find more about Manitoba's Provincial Nomination Program (PNP) here: https://www.immigratemanitoba.com/", menuContainer.backToPNPMenu);
     } else if (query.data === "nb") {
-        await bot.sendMessage(chatId,`
+        await bot.sendMessage(chatId, `
             🇨🇦 New Brunswick’s immigration program streams are pathways to permanent residence (PR) for foreign workers who have the skills, education, and work experience necessary to successfully contribute to New Brunswick’s economy.
 
 When applying to many of these programs, you must be PR ready. This means that you meet all minimum eligibility requirements and have all the required documents on hand to prepare and submit a complete and correct application to the province of New Brunswick and to the Government of Canada.
@@ -611,7 +593,7 @@ The Newfoundland and Labrador Provincial Nominee Program (NLPNP) facilitates the
 `)
         await bot.sendMessage(chatId, "🧐 You can find more about Nova Scotia's Provincial Nomination Program (PNP) here: https://liveinnovascotia.com/nova-scotia-nominee-program/", menuContainer.backToPNPMenu);
     } else if (query.data === "ont") {
-        await bot.sendMessage(chatId,`
+        await bot.sendMessage(chatId, `
             🇨🇦 The OINP nominates foreign workers, entrepreneurs and international students to the Government of Canada for permanent residence in Ontario.
 
 Ontario's economic immigration program works in partnership with the Canadian government's immigration pathways.
