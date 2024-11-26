@@ -419,7 +419,7 @@ bot.on('callback_query', async (query) => {
                 ]
             }
         };
-        bot.sendMessage(chatId, "The FAQ Section is filled with resources regarding...", subMenu);
+        bot.sendMessage(chatId, "✅ Click on the menu buttons below to navigate through the FAQ sections. More resources will be added in the futre. ", menuContainer.mainMenu);
     }
     /**
      * Immigrating through Express Entry
@@ -429,27 +429,23 @@ bot.on('callback_query', async (query) => {
         const subMenu = {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: "How does Express Entry work?", callback_data: "ee_how" }],
                     [{ text: "What are the requirements?", callback_data: "ee_req" }],
                     [{ text: "How to improve my CRS score?", callback_data: "ee_crs" }],
                     [{ text: "Back to Main Menu", callback_data: "main_menu" }],
                 ]
             }
         }
-        await bot.sendMessage(chatId, "Express Entry is...", subMenu);
-    }
-    else if (query.data === "ee_how") {
-        await bot.sendMessage(chatId, `
-            <b>There are 3 immigration programs managed through Express Entry</b>:
-            1. Federal Skilled Worker Program
-            2. Federal Skilled Trades Program
-            3. Canadian Experience Class
-            `, { parse_mode: "HTML" });
-        await bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", menuContainer.backToEEMenu);
-    }
+        await bot.sendMessage(chatId, `Express Entry is an online system that IRCC uses to manage immigration applications from skilled workers.
 
-    
+There are 3 immigration programs managed through Express Entry:
 
+✅ Canadian Experience Class
+✅ Federal Skilled Worker Program
+✅ Federal Skilled Trades Program
+`);
+        await bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", subMenu);
+
+    }
     /**
      * Learn about Provincial Nomination Programs
      */
