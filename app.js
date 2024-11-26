@@ -529,6 +529,8 @@ The Canadian Experience Class is for skilled workers who have Canadian work expe
 ✅ If you have foreign education 
 
 > You must be admissible to Canada.
+
+For more information, visit the official IRCC page: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/eligibility/canadian-experience-class.html
 `, menuContainer.backToEEPrograms)
     }
     else if (query.data === "fsw") {
