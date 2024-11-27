@@ -9,6 +9,7 @@ const irccDrawScraper = require('./src/utils/irccDrawScraper')
 const chartGenerator = require('./src/utils/chartGenerator')
 const irccDrawAnalyzer = require('./src/utils/irccDrawAnalyzer')
 const utils = require('./src/utils/utils')
+const speechNewsParser = require('./src/utils/speechNewsParser')
 
 require('dotenv').config();
 
@@ -297,6 +298,36 @@ bot.onText("/full", async (msg) => {
         await bot.sendMessage(chatId, "⁉ Error fetching feed, please try again. ");
         console.error("Error fetching feed: " + error.stack);
     }
+})
+
+bot.onText("/latest_speech", async(msg) =>{
+    const chatId = msg.chat.id;
+    logger.logUserInteraction(bot, msg);
+    const logString = logger.parseLogToString(bot, msg);
+    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
+
+    bot.sendMessage(chatId, "🇨🇦 Fetching the latest speech news, this might take a few seconds 🙏 🇨🇦");
+
+    try {
+
+        let speechData = await speechNewsParser.fetchSpeechNews();
+        if (speechData.length === 0) {
+            await bot.sendMessage(chatId, "⁉ No speech news found");
+            return
+        } else {
+            await bot.sendMessage(chatId, "🇨🇦 Here are the latest speech news 🇨🇦");
+        }
+
+        // Send Message, iterate and send one message per item
+        for (const item of speechData) {
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
+        }
+    } catch(error){
+        await bot.sendMessage(chatId, "⁉ Error fetching speech news, please try again. ");
+        console.error("Error fetching speech news: " + error.stack);
+    }
+
+
 })
 
 bot.onText("/last_draws", async (msg) => {
