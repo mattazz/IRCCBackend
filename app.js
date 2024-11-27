@@ -534,11 +534,9 @@ For more information, visit the official IRCC page: https://www.canada.ca/en/imm
 `, menuContainer.backToEEPrograms)
     }
     else if (query.data === "fsw") {
-
         await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`, menuContainer.backToEEPrograms)
     }
     else if (query.data === "fst") {
-
         await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`, menuContainer.backToEEPrograms)
     }
 
