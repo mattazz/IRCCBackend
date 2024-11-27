@@ -36,12 +36,6 @@ const puppeteer = require("puppeteer");
      * </article>
      */
 
-    const parsedArticle = {
-        title: "",
-        link: "",
-        date: "",
-        summary: ""
-    }
     const parsedArticles = [];
 
     const articleSelector = 'article.item';
@@ -55,6 +49,8 @@ const puppeteer = require("puppeteer");
         const articles = await page.$$(articleSelector);
 
         for (const article of articles) { //gets list of h3.h5
+
+            const parsedArticle = {};
             //First layer scrape
             const heading = await article.$(headingSelector);
 
