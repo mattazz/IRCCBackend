@@ -85,11 +85,14 @@ const puppeteer = require("puppeteer");
                 if(summary.length > 1){
                     const summaryText = await page.evaluate(p => p.textContent, summary[1]);
                     parsedArticle.summary = summaryText;
-                }                 
+                }     
+                            
             }
-            parsedArticles.push(parsedArticle);
-        }
-
+            parsedArticles.push(parsedArticle);    
+            console.log(parsedArticle); //unique articles here, no duplicates
+                    
+        }   
+        //suddenly, all articles are the same, all the way to the end     
         return parsedArticles; //list of objects
     } catch (error) {
         console.error(`Error during scraping: ${error}`);
