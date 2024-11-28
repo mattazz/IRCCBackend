@@ -1,10 +1,18 @@
-const puppeteer = require("puppeteer");
+import puppeteer from 'puppeteer';
+import SpeechArticle  from '../models/speechArticle.js';
+import mongoose from 'mongoose';
+import dotnet from 'dotenv';
+import {dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({path: "../../.env"})
 
 /** Scrapes the IRCC speeches news feed.
  * 
  * @returns {Promise<Array>} An array of objects containing the scraped speech news.
  */
- async function scrapeSpeechNews() {
+async function scrapeSpeechNews() {
     console.log("Starting to scrape...");
 
     const browser = await puppeteer.launch({ headless: true });
@@ -88,7 +96,7 @@ const puppeteer = require("puppeteer");
             console.log(parsedArticle); //unique articles here, no duplicates
                     
         }   
-        //suddenly, all articles are the same, all the way to the end     
+        //suddenly, all articles are the same, all the way to the end  
         return parsedArticles; //list of objects
     } catch (error) {
         console.error(`Error during scraping: ${error}`);
@@ -97,6 +105,21 @@ const puppeteer = require("puppeteer");
     }
 }
 
-module.exports = {
-    scrapeSpeechNews
+async function pushToDB() {    
+    mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+    const fullScrape = await scrapeSpeechNews();
+    const testPush = fullScrape[0];
+
+    const speechArticle = new SpeechArticle({
+        title: testPush.title,
+        url: testPush.link,
+        date: testPush.date,
+        summary: testPush.summary
+    })
+
+    // await speechArticle.save();
 }
+
+pushToDB();
+
+export default scrapeSpeechNews;
