@@ -57,6 +57,7 @@ async function scrapeSpeechNews() {
         const articles = await page.$$(articleSelector);
 
         for (const article of articles) { //gets list of h3.h5
+            console.log(`Scraping article...`);
 
             const parsedArticle = {};
             //First layer scrape
@@ -90,12 +91,11 @@ async function scrapeSpeechNews() {
                     const summaryText = await page.evaluate(p => p.textContent, summary[1]);
                     parsedArticle.summary = summaryText;
                 }
-
             }
+            console.log(`Adding article to list...`);
             parsedArticles.push(parsedArticle);
-
         }
-        //suddenly, all articles are the same, all the way to the end  
+        console.log(`Scraping complete for ${parsedArticles.length} articles.`);
         return parsedArticles; //list of objects
     } catch (error) {
         console.error(`Error during scraping: ${error}`);
@@ -123,8 +123,13 @@ async function pushOneToDB(articleObject) {
 }
 
 async function pushAllToDB(articleList) {
-    try{
-        mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+    let connection;
+    
+    try {
+        connection = mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+
+        await deleteAllDocuments();
+
         for (const article of articleList) {
             console.log(`Pushing to database...`);
             const speechArticle = new SpeechArticle({
@@ -136,14 +141,33 @@ async function pushAllToDB(articleList) {
             await speechArticle.save();
             console.log(`Pushed ${article.title} to database.`);
         }
-    } catch (error){
+    } catch (error) {
         console.error(`Error during database connection: ${error}`);
-    } finally{
+    } finally {
+        if (connection) {
+            await connection.disconnect();
+            console.log(`Disconnected from database.`);
+            
+        }
+    }
+}
+
+async function deleteAllDocuments() {
+    try {
+        mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        console.log(`Deleting all documents...`);
+        await SpeechArticle.deleteMany({});
+        console.log(`Deleted all documents.`);
+    } catch (error) {
+        console.error(`Error during database connection: ${error}`);
+    } finally {
         mongoose.connection.close();
     }
 }
+
 let result = await scrapeSpeechNews();
 pushAllToDB(result);
+
 
 
 export default scrapeSpeechNews;
