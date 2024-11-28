@@ -1,7 +1,6 @@
-
-const { match } = require('assert')
-const axios = require('axios')
-const fs = require('fs')
+import { match } from 'assert';
+import axios from 'axios';
+import fs from 'fs';
 
 const drawUrl = "https://www.canada.ca/content/dam/ircc/documents/json/ee_rounds_123_en.json"
 
@@ -105,8 +104,4 @@ const filterDraws = async (filter = "CEC", max_num = 10) => {
     return [filteredDraws, subclassFilteredDraws]
 
 }
-
-module.exports = {
-    parseDraws,
-    filterDraws,
-}
+export default {parseDraws, filterDraws}

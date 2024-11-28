@@ -191,4 +191,4 @@ async function getStoredSpeechArticles() {
     }
 }
 
-export {scrapeSpeechNews, scheduledScrapeAndPush, getStoredSpeechArticles};
+export default {scrapeSpeechNews, scheduledScrapeAndPush, getStoredSpeechArticles};

@@ -1,4 +1,5 @@
-const irccDrawScraper = require('./irccDrawScraper');
+import irccDrawScraper from './irccDrawScraper.js';
+
 /**
  * TODO
  * [ ] Dump the output into a file and check the data compared to the actual CRS scores if the 
@@ -12,7 +13,7 @@ const irccDrawScraper = require('./irccDrawScraper');
  * 
  * @param {*} data -> parsedDrawArray{date, drawNumber, crs, class, drawSize}
  */
-const analyzeCRSRollingAverage = (data, rolling_length = 4) => {
+export const analyzeCRSRollingAverage = (data, rolling_length = 4) => {
 
     const crsData = data
         .map(draw => ({
@@ -47,6 +48,4 @@ const analyzeCRSRollingAverage = (data, rolling_length = 4) => {
 
 }
 
-module.exports = {
-    analyzeCRSRollingAverage
-}
+export default {analyzeCRSRollingAverage};

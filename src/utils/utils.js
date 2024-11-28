@@ -10,6 +10,4 @@ function formatDate(dateString){
     return date.toLocaleDateString('en-US', options);
 }
 
-module.exports = {
-    formatDate
-}
+export default {formatDate}

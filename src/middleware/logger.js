@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const TelegramBot = require('node-telegram-bot-api')
-const dotenv = require('dotenv');
+import fs from 'fs';
+import path from 'path';
+import TelegramBot from 'node-telegram-bot-api';
+import dotenv from 'dotenv';
 
 const admin_id = process.env.ADMIN_USER_ID;
 
@@ -84,8 +84,4 @@ const testLogSaveFile = () => {
     saveLogToFile(log);
 }
 
-module.exports = {
-    logUserInteraction,
-    sendLogToPrimary,
-    parseLogToString,
-}
+export default {logUserInteraction, sendLogToPrimary, parseLogToString}

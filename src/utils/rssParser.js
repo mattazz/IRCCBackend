@@ -1,6 +1,6 @@
-const axios = require('axios')
-const Parser = require('rss-parser')
-const utils = require('./utils')
+import axios from 'axios';
+import Parser from 'rss-parser';
+import utils from './utils.js';
 
 
 const irccNewsURL = "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=departmentofcitizenshipandimmigration&sort=publishedDate&orderBy=desc&publishedDate%3E=2021-07-23&pick=50&format=atom&atomtitle=Immigration,%20Refugees%20and%20Citizenship%20Canada"
@@ -95,7 +95,8 @@ async function keywordSearchIRCCFeed(keyword) {
     return keywordItems
 }
 
-module.exports = {
+
+export default {
     fetchFullIRCCFeed,
     fetchIRCCFeed_Monthly,
     validateUserMonthInput,

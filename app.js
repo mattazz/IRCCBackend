@@ -1,17 +1,18 @@
-const express = require('express');
-const bodyParser = require('body-parser')
-const axios = require('axios')
-const TelegramBot = require('node-telegram-bot-api')
+import express from 'express';
+import bodyParser from 'body-parser';
+import axios from 'axios';
+import TelegramBot from 'node-telegram-bot-api';
 
-const rssParser = require('./src/utils/rssParser')
-const logger = require('./src/middleware/logger')
-const irccDrawScraper = require('./src/utils/irccDrawScraper')
-const chartGenerator = require('./src/utils/chartGenerator')
-const irccDrawAnalyzer = require('./src/utils/irccDrawAnalyzer')
-const utils = require('./src/utils/utils')
-const speechNewsParser = require('./src/utils/speechNewsParser')
+import rssParser from './src/utils/rssParser.js';
+import logger from './src/middleware/logger.js';
+import irccDrawScraper from './src/utils/irccDrawScraper.js';
+import chartGenerator from './src/utils/chartGenerator.js';
+import irccDrawAnalyzer from './src/utils/irccDrawAnalyzer.js';
+import utils from './src/utils/utils.js';
+import speechNewsParser from './src/utils/speechNewsParser.js';
 
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express()
 app.use(bodyParser.json())
