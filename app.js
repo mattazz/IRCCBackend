@@ -306,10 +306,10 @@ bot.onText("/latest_speech", async(msg) =>{
     const logString = logger.parseLogToString(bot, msg);
     logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
 
-    bot.sendMessage(chatId, "🇨🇦 Fetching the latest speech news, this might take a few seconds 🙏 🇨🇦");
+    bot.sendMessage(chatId, "🇨🇦 Fetching the latest speech news, this might take a few seconds... 🙏 🇨🇦");
 
     try {
-        let speechData = await speechNewsParser.scrapeSpeechNews();
+        let speechData = await speechNewsParser.getStoredSpeechArticles();
         
         if (speechData.length === 0) {
             await bot.sendMessage(chatId, "⁉ No speech news found");
@@ -320,7 +320,7 @@ bot.onText("/latest_speech", async(msg) =>{
 
         // Send Message, iterate and send one message per item
         for (const item of speechData) {
-            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.date) + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.date) + "\n" + item.url);
         }
     } catch(error){
         await bot.sendMessage(chatId, "⁉ Error fetching speech news, please try again. ");
