@@ -1,4 +1,4 @@
-const speechNewsParser = require('./speechNewsParser')
+import speechNewsParser from './speechNewsParser';
 
 const workerDBUpdater = async () => {
     console.log(`[workerDBUpdater.js] => Worker started.`);
