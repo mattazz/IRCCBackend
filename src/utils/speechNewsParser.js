@@ -1,12 +1,12 @@
 import puppeteer from 'puppeteer';
-import SpeechArticle  from '../models/speechArticle.js';
+import SpeechArticle from '../models/speechArticle.js';
 import mongoose from 'mongoose';
-import dotnet from 'dotenv';
-import {dirname } from 'path';
+import dotenv from 'dotenv';
+import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-dotenv.config({path: "../../.env"})
+dotenv.config({ path: "../../.env" })
 
 /** Scrapes the IRCC speeches news feed.
  * 
@@ -79,23 +79,22 @@ async function scrapeSpeechNews() {
                 if (date) {
                     const dateText = await page.evaluate(date => date.textContent, date);
                     const dateMatch = dateText.match(/\d{4}-\d{2}-\d{2}/); // Extracts date in YYYY-MM-DD format
-                    if (dateMatch){
+                    if (dateMatch) {
                         parsedArticle.date = dateMatch[0];
                     }
                 }
 
                 // Third layer scrape
                 const summary = await article.$$('p')
-                if(summary.length > 1){
+                if (summary.length > 1) {
                     const summaryText = await page.evaluate(p => p.textContent, summary[1]);
                     parsedArticle.summary = summaryText;
-                }     
-                            
+                }
+
             }
-            parsedArticles.push(parsedArticle);    
-            console.log(parsedArticle); //unique articles here, no duplicates
-                    
-        }   
+            parsedArticles.push(parsedArticle);
+
+        }
         //suddenly, all articles are the same, all the way to the end  
         return parsedArticles; //list of objects
     } catch (error) {
@@ -105,21 +104,46 @@ async function scrapeSpeechNews() {
     }
 }
 
-async function pushToDB() {    
-    mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
-    const fullScrape = await scrapeSpeechNews();
-    const testPush = fullScrape[0];
+async function pushOneToDB(articleObject) {
+    try {
+        mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
 
-    const speechArticle = new SpeechArticle({
-        title: testPush.title,
-        url: testPush.link,
-        date: testPush.date,
-        summary: testPush.summary
-    })
-
-    // await speechArticle.save();
+        const speechArticle = new SpeechArticle({
+            title: articleObject.title,
+            url: articleObject.link,
+            date: articleObject.date,
+            summary: articleObject.summary
+        })
+        await speechArticle.save();
+    } catch (error) {
+        console.error(`Error during database connection: ${error}`);
+    } finally {
+        mongoose.connection.close();
+    }
 }
 
-pushToDB();
+async function pushAllToDB(articleList) {
+    try{
+        mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        for (const article of articleList) {
+            console.log(`Pushing to database...`);
+            const speechArticle = new SpeechArticle({
+                title: article.title,
+                url: article.link,
+                date: article.date,
+                summary: article.summary
+            })
+            await speechArticle.save();
+            console.log(`Pushed ${article.title} to database.`);
+        }
+    } catch (error){
+        console.error(`Error during database connection: ${error}`);
+    } finally{
+        mongoose.connection.close();
+    }
+}
+let result = await scrapeSpeechNews();
+pushAllToDB(result);
+
 
 export default scrapeSpeechNews;
