@@ -104,6 +104,10 @@ async function scrapeSpeechNews() {
     }
 }
 
+/**
+ * 
+ * @param {Object} articleObject An object containing the article information.
+ */
 async function pushOneToDB(articleObject) {
     try {
         mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
@@ -121,12 +125,13 @@ async function pushOneToDB(articleObject) {
         mongoose.connection.close();
     }
 }
-
+/**
+ * 
+ * @param {Array<Object>} articleList a list of Objects with the structure {title: string, link: string, date: string, summary: string}
+ */
 async function pushAllToDB(articleList) {
-    let connection;
-    
     try {
-        connection = mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
 
         await deleteAllDocuments();
 
@@ -144,30 +149,49 @@ async function pushAllToDB(articleList) {
     } catch (error) {
         console.error(`Error during database connection: ${error}`);
     } finally {
-        if (connection) {
-            await connection.disconnect();
-            console.log(`Disconnected from database.`);
-            
-        }
+        await mongoose.connection.close();
+        console.log(`Disconnected from database.`);
     }
 }
 
+/**
+ * Deletes all documents in the collection.
+ */
 async function deleteAllDocuments() {
     try {
-        mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
         console.log(`Deleting all documents...`);
         await SpeechArticle.deleteMany({});
         console.log(`Deleted all documents.`);
     } catch (error) {
         console.error(`Error during database connection: ${error}`);
-    } finally {
-        mongoose.connection.close();
     }
 }
 
-let result = await scrapeSpeechNews();
-pushAllToDB(result);
+/**
+ * Used for worker threads to scrape and push to database on a schedule.
+ */
+async function scheduledScrapeAndPush() {
+    let result = await scrapeSpeechNews();
+    pushAllToDB(result);
+}
+
+/**
+ * 
+ * @returns {Promise<Array>} An array of objects containing the stored speech articles.
+ */
+async function getStoredSpeechArticles() {
+    try {
+        await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        const articles = await SpeechArticle.find({});
+        return articles;
+    } catch (error) {
+        console.error(`Error during database connection: ${error}`);
+    } finally {
+        await mongoose.connection.close();
+    }
+}
 
 
 
-export default scrapeSpeechNews;
+
+export {scrapeSpeechNews, scheduledScrapeAndPush, getStoredSpeechArticles};
