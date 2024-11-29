@@ -362,6 +362,8 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
     const logString = logger.parseLogToString(bot, msg);
     logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
 
+    await bot.sendMessage(chatId, "🇨🇦 Fetching the last " + input + " draws, this might take a few seconds... 🙏 🇨🇦");
+
     try {
         let drawData = await irccDrawScraper.parseDraws(input);
         for (const draw of drawData) {
