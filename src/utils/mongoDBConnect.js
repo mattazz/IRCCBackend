@@ -30,6 +30,4 @@ const closeDatabaseConnection = async () => {
     }
 };
 
-connectToDatabase();
-
 export default { connectToDatabase, closeDatabaseConnection }

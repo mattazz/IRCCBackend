@@ -197,12 +197,14 @@ async function scheduledScrapeAndPush() {
 async function getStoredSpeechArticles() {
     try {
         await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        // mongoDBConnect.connectToDatabase();
         const articles = await SpeechArticle.find({});
         return articles;
     } catch (error) {
         console.error(`Error during database connection: ${error}`);
     } finally {
         await mongoose.connection.close();
+        // mongoDBConnect.closeDatabaseConnection();
     }
 }
 
