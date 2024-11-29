@@ -231,7 +231,7 @@ bot.onText("/latest_news", async (msg) => {
 
     try {
         // get latest month
-        input_month = new Date().toLocaleString('default', { month: 'long' });
+        let input_month = new Date().toLocaleString('default', { month: 'long' });
 
         // Fetch RSS Feed
         let feedMessage = await rssParser.fetchIRCCFeed_Monthly(input_month);
