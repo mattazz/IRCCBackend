@@ -71,4 +71,4 @@ const createChartForRolling = async (chat_id, bot_token,drawData = null, analyze
 
 }
 
-export default createChartForRolling;
+export default {createChartForRolling};

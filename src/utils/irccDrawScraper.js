@@ -1,5 +1,6 @@
 import { match } from 'assert';
 import axios from 'axios';
+import { log } from 'console';
 import fs from 'fs';
 
 const drawUrl = "https://www.canada.ca/content/dam/ircc/documents/json/ee_rounds_123_en.json"
@@ -32,11 +33,14 @@ const parseDraws = async (max_draw = 5) => {
     // draws will be a json object
     try {
         const result = await getDraws()
+        if (!result || !result.rounds) {
+            throw new Error("Invalid draw data received");
+        }
         
         // only get the last 5 draws
         const limitedDraws = result.rounds.slice(0, max_draw)
 
-        parsedDrawArray = []
+        let parsedDrawArray = []
 
         for (const draw of limitedDraws) {
             const drawDate = new Date(draw.drawDate)
@@ -55,9 +59,15 @@ const parseDraws = async (max_draw = 5) => {
             })
     
         }
+
+        if (parsedDrawArray.length === 0) {
+            throw new Error("No valid draws found");
+        }        
         return parsedDrawArray
     } catch (error) {
         console.error("ERRORRRRR: " + error)
+        throw error; // Re-throw to handle in calling function
+
     }
 
     // console.log("Result:", JSON.stringify(result, null, 2));
@@ -67,6 +77,21 @@ const parseDraws = async (max_draw = 5) => {
     
 }
 
+const classFilterMap = {
+    "CEC": "Canadian Experience Class",
+    "FSW": "Federal Skilled Worker",
+    "FST": "Federal Skilled Trades",
+    "PNP": "Provincial Nominee Program",
+    "FLP": "French language proficiency",
+    "TO": "Trade occupations",
+    "HO": "Healthcare occupations",
+    "STEM": "STEM occupations",
+    "GEN" : "General",
+    "TRAN": "Transport occupations",
+    "AGRI": "Agriculture and agri-food occupations",
+}
+
+
 /**
  * Filters the draws based on the specified filter and returns the last 10 draws.
  * 
@@ -75,33 +100,27 @@ const parseDraws = async (max_draw = 5) => {
  * @returns 
  */
 const filterDraws = async (filter = "CEC", max_num = 10) => {
-    const parsedDraws = await parseDraws(max_num);
-
-    classFilterMap = {
-        "CEC": "Canadian Experience Class",
-        "FSW": "Federal Skilled Worker",
-        "FST": "Federal Skilled Trades",
-        "PNP": "Provincial Nominee Program",
-        "FLP": "French language proficiency",
-        "TO": "Trade occupations",
-        "HO": "Healthcare occupations",
-        "STEM": "STEM occupations",
-        "GEN" : "General",
-        "TRAN": "Transport occupations",
-        "AGRI": "Agriculture and agri-food occupations",
-    }
-
-
-    let filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
-
-    let subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
-    if (filteredDraws.length < 10){
-        subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
-    } else{
-        subclassFilteredDraws = []
-    }
     
-    return [filteredDraws, subclassFilteredDraws]
 
+    try {
+        const parsedDraws = await parseDraws(max_num); 
+
+        filter = filter.toUpperCase();
+
+        let filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))          
+        let subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]));                
+        
+        if (filteredDraws.length < 10){
+            subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
+        } else{
+            subclassFilteredDraws = []
+        }
+
+        return [filteredDraws, subclassFilteredDraws]
+    } catch (error) {
+        console.error("Error filtering draws:", error);
+        throw error;
+    }
 }
+
 export default {parseDraws, filterDraws}

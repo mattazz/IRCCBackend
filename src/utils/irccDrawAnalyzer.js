@@ -41,8 +41,8 @@ export const analyzeCRSRollingAverage = (data, rolling_length = 4) => {
         });
     }
 
-    console.log(`Rolling Average: ${JSON.stringify(rollingAverage, null, 2)}`);
-    console.log(`CRS Data: ${JSON.stringify(crsData, null, 2)}`);
+    // console.log(`Rolling Average: ${JSON.stringify(rollingAverage, null, 2)}`);
+    // console.log(`CRS Data: ${JSON.stringify(crsData, null, 2)}`);
 
     return rollingAverage;
 

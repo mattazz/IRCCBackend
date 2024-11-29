@@ -369,9 +369,28 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
     }
 })
 
+const classFilterMap = {
+    "CEC": "Canadian Experience Class",
+    "FSW": "Federal Skilled Worker",
+    "FST": "Federal Skilled Trades",
+    "PNP": "Provincial Nominee Program",
+    "FLP": "French language proficiency",
+    "TO": "Trade occupations",
+    "HO": "Healthcare occupations",
+    "STEM": "STEM occupations",
+    "GEN" : "General",
+    "TRAN": "Transport occupations",
+    "AGRI": "Agriculture and agri-food occupations",
+}
+
 bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const filterCode = match[1]; //captured regex response
+
+    if(!classFilterMap[filterCode.toUpperCase()]){
+        await bot.sendMessage(chatId, "⁉ Invalid filter code. Please use a valid code (see /help for the list of valid codes).");
+    }
+    
 
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
@@ -379,6 +398,8 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
     try {
         let [drawData, subclassDrawData] = await irccDrawScraper.filterDraws(filterCode, 300);
+
+
 
         let toMessageDrawData = drawData.length > 10 ? drawData.slice(0, 10) : drawData
 
@@ -389,11 +410,11 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
             toMessageDrawData = drawData.length > 10 ? drawData.slice(0, 10) : drawData
         }
 
-        await bot.sendMessage(chatId, `🇨🇦Showing the last 10 draws for ${filterCode}🇨🇦`);
+        await bot.sendMessage(chatId, `🇨🇦Showing the last 10 draws for ${classFilterMap[filterCode.toUpperCase()]}🇨🇦`);
 
         for (const draw of toMessageDrawData) {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Sub-class: ${draw.subclass}\n👉Draw Size: ${draw.drawSize}`);
-        }
+        }        
 
         // Analyze draws 
         let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
@@ -403,7 +424,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
 
         if (analyzedData.length < 2) {
-            await bot.sendMessage(chatId, "⁉ Not enough specific subclass data to analyze the rolling average CRS.");
+            await bot.sendMessage(chatId, "⁉ Not enough specific draw class data to analyze the rolling average CRS.");
             return
         } else if (analyzedData.length == 0) {
             await bot.sendMessage(chatId, "⁉ There is no subclass data to analyze the rolling average CRS.");
