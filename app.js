@@ -307,10 +307,12 @@ bot.onText("/latest_speech", async(msg) =>{
     const logString = logger.parseLogToString(bot, msg);
     logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
 
-    bot.sendMessage(chatId, "🇨🇦 Fetching the latest speech news, this might take a few seconds... 🙏 🇨🇦");
+    bot.sendMessage(chatId, "🇨🇦 Fetching the last 10 speech news, this might take a few seconds... 🙏 🇨🇦");
 
     try {
         let speechData = await speechNewsParser.getStoredSpeechArticles();
+
+        speechData = speechData.slice(0, 10);
         
         if (speechData.length === 0) {
             await bot.sendMessage(chatId, "⁉ No speech news found");
