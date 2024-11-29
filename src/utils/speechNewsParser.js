@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import mongoDBConnect from './mongoDBConnect.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: "../../.env" })
@@ -133,8 +134,8 @@ async function pushOneToDB(articleObject) {
 async function pushAllToDB(articleList) {
     try {
         console.log(`[pushAllToDB] => Connecting to database...`);
-        await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
-
+        // await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        await mongoDBConnect.connectToDatabase();
         console.log(`[pushAllToDB] => Deleting all documents...`);
         
         await deleteAllDocuments();
@@ -155,7 +156,8 @@ async function pushAllToDB(articleList) {
     } catch (error) {
         console.error(`[pushAllToDB] => Error during database connection: ${error}`);
     } finally {
-        await mongoose.connection.close();
+        // await mongoose.connection.close();
+        await mongoDBConnect.closeDatabaseConnection();
         console.log(`Disconnected from database.`);
     }
 }
