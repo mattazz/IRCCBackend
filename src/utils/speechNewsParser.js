@@ -13,7 +13,8 @@ dotenv.config({ path: "../../.env" })
  * @returns {Promise<Array>} An array of objects containing the scraped speech news.
  */
 async function scrapeSpeechNews() {
-    console.log("Starting to scrape...");
+    console.log(`[scrapeSpeechNews] => Starting scraping...`);
+    
 
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
@@ -120,7 +121,7 @@ async function pushOneToDB(articleObject) {
         })
         await speechArticle.save();
     } catch (error) {
-        console.error(`Error during database connection: ${error}`);
+        console.error(`[pushOneToDB] => Error during database connection: ${error}`);
     } finally {
         mongoose.connection.close();
     }
@@ -131,10 +132,15 @@ async function pushOneToDB(articleObject) {
  */
 async function pushAllToDB(articleList) {
     try {
+        console.log(`[pushAllToDB] => Connecting to database...`);
         await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
 
+        console.log(`[pushAllToDB] => Deleting all documents...`);
+        
         await deleteAllDocuments();
 
+        console.log(`[pushAllToDB] => Pushing to database...`);
+        
         for (const article of articleList) {
             console.log(`Pushing to database...`);
             const speechArticle = new SpeechArticle({
@@ -147,7 +153,7 @@ async function pushAllToDB(articleList) {
             console.log(`Pushed ${article.title} to database.`);
         }
     } catch (error) {
-        console.error(`Error during database connection: ${error}`);
+        console.error(`[pushAllToDB] => Error during database connection: ${error}`);
     } finally {
         await mongoose.connection.close();
         console.log(`Disconnected from database.`);
@@ -159,11 +165,11 @@ async function pushAllToDB(articleList) {
  */
 async function deleteAllDocuments() {
     try {
-        console.log(`Deleting all documents...`);
+        console.log(`[deleteAllDocuments] => Deleting all documents...`);
         await SpeechArticle.deleteMany({});
-        console.log(`Deleted all documents.`);
+        console.log(`[deleteAllDocuments] => Deleted all documents.`);
     } catch (error) {
-        console.error(`Error during database connection: ${error}`);
+        console.error(`[deleteAllDocuments] => Error during database connection: ${error}`);
     }
 }
 
@@ -172,7 +178,14 @@ async function deleteAllDocuments() {
  */
 async function scheduledScrapeAndPush() {
     let result = await scrapeSpeechNews();
-    pushAllToDB(result);
+    if (result.length === 0) {
+        console.log(`[scheduledScrapeAndPush] => No articles found.`);
+        return;
+    } else if (result.length > 0) {
+        console.log(`[scheduledScrapeAndPush] => Found ${result.length} articles.`);
+    }
+    console.log(`[scheduledScrapeAndPush] => Pushing to database...`);
+    await pushAllToDB(result);
 }
 
 /**
