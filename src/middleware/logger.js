@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const TelegramBot = require('node-telegram-bot-api')
-const dotenv = require('dotenv');
+import fs from 'fs';
+import path from 'path';
+import TelegramBot from 'node-telegram-bot-api';
+import dotenv from 'dotenv';
 
 const admin_id = process.env.ADMIN_USER_ID;
 
-function logUserInteraction(bot, msg){
+function logUserInteraction(bot, msg) {
     const dateTime = new Date();
     const chatId = msg.chat.id;
     const userId = msg.from.id;
@@ -22,13 +22,14 @@ function logUserInteraction(bot, msg){
         userName,
         messageText
     }
-    
+
     // Send log to admin
     // sendLogToPrimary(bot, log);
     // Save logs to a file
 
 }
-function parseLogToString(bot, msg){
+
+function parseLogToString(bot, msg) {
     const dateTime = new Date();
     const chatId = msg.chat.id;
     const userId = msg.from.id;
@@ -39,11 +40,11 @@ function parseLogToString(bot, msg){
 
 }
 
-function saveLogToFile(log){
+function saveLogToFile(log) {
     // Save logs to a file
     const dateToday = new Date().toISOString().split('T')[0];
 
-    const logFilePath = path.join(__dirname,`user_interaction${dateToday}.log`)
+    const logFilePath = path.join(__dirname, `user_interaction${dateToday}.log`)
     const logString = JSON.stringify(log) + '\n'; // NDJSON format
 
 
@@ -62,17 +63,17 @@ function saveLogToFile(log){
     });
 }
 
-function sendLogToPrimary(bot, admin_id=admin_id, log){
-    
+function sendLogToPrimary(bot, admin_id = admin_id, log) {
+
     // Send log to primary user
     const primaryChatId = admin_id;
     if (primaryChatId) {
         bot.sendMessage(primaryChatId, JSON.stringify(log, null, 2));
     }
 
-} 
-    
-const testLogSaveFile = () =>{
+}
+
+const testLogSaveFile = () => {
     const log = {
         dateTime: new Date(),
         chatId: 123456,
@@ -83,8 +84,4 @@ const testLogSaveFile = () =>{
     saveLogToFile(log);
 }
 
-module.exports={
-    logUserInteraction,
-    sendLogToPrimary,
-    parseLogToString,
-}
+export default {logUserInteraction, sendLogToPrimary, parseLogToString}

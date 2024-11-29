@@ -1,15 +1,18 @@
-const express = require('express');
-const bodyParser = require('body-parser')
-const axios = require('axios')
-const TelegramBot = require('node-telegram-bot-api')
+import express from 'express';
+import bodyParser from 'body-parser';
+import axios from 'axios';
+import TelegramBot from 'node-telegram-bot-api';
 
-const rssParser = require('./src/utils/rssParser')
-const logger = require('./src/middleware/logger')
-const irccDrawScraper = require('./src/utils/irccDrawScraper')
-const chartGenerator = require('./src/utils/chartGenerator')
-const irccDrawAnalyzer = require('./src/utils/irccDrawAnalyzer')
+import rssParser from './src/utils/rssParser.js';
+import logger from './src/middleware/logger.js';
+import irccDrawScraper from './src/utils/irccDrawScraper.js';
+import chartGenerator from './src/utils/chartGenerator.js';
+import irccDrawAnalyzer from './src/utils/irccDrawAnalyzer.js';
+import utils from './src/utils/utils.js';
+import speechNewsParser from './src/utils/speechNewsParser.js';
 
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express()
 app.use(bodyParser.json())
@@ -63,9 +66,10 @@ app.post('/webhook', (req, res) => {
 // Set up command menu
 bot.setMyCommands([
     { command: '/help', description: 'Get the bot commands' },
-    { command: '/latest', description: 'Get the latest news' },
+    { command: '/latest_news', description: 'Get the latest news' },
+    { command: '/search_news', description: 'Search for news by keyword (ex. /search_news Express Entry)' },
     { command: '/month', description: 'Get news for a specific month (ex. /month January)' },
-    { command: '/full', description: 'Get the full news feed' },
+    { command: '/latest_speech', description: 'Get the last 10 official speeches' },
     { command: '/last_draws', description: 'Get the last 5 IRCC draws' },
     { command: '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)' },
     { command: '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)' },
@@ -100,9 +104,10 @@ bot.onText(/\/start/, (msg) => {
     - /help - List down all the possible commands
 
     News: 
-    - /latest - Get the latest news
+    - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed
+    - /search_news [keyword] - Search for news by keyword (e.g., /search_news Express Entry)
+    - /latest_speech - Get the last 10 news regarding official speeches
 
     FAQ:
     - /faq - Open the submenu for the frequently asked questions resources. 
@@ -140,9 +145,10 @@ bot.onText(/\/help/, (msg) => {
     - /help - List down all the possible commands
 
     News: 
-    - /latest - Get the latest news
+    - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
-    - /full - Get the full news feed
+    - /search_news [keyword] - Search for news by keyword (e.g., /search_news Express Entry)
+    - /latest_speech - Get the last 10 news regarding official speeches
 
     FAQ:
     - /faq - Open the submenu for the frequently asked questions resources. 
@@ -209,7 +215,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
 
         // Send Message, iterate and send one message per item
         for (const item of feedMessage) {
-            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
         if (error.message === "Invalid Month") {
@@ -223,7 +229,7 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
     }
 });
 
-bot.onText("/latest", async (msg) => {
+bot.onText("/latest_news", async (msg) => {
     const chatId = msg.chat.id;
 
     logger.logUserInteraction(bot, msg);
@@ -245,13 +251,43 @@ bot.onText("/latest", async (msg) => {
 
         // Send Message, iterate and send one message per item
         for (const item of feedMessage) {
-            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
         await bot.sendMessage(chatId, `⁉ Error fetching feed for the month of ${input_month} ${new Date().getFullYear()}`);
         console.error("Error onText: " + error.stack);
     }
 });
+
+bot.onText(/\/search_news (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const keyword = match[1]; //captured regex response    
+
+    logger.logUserInteraction(bot, msg);
+    const logString = logger.parseLogToString(bot, msg);
+    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
+
+    try {
+        let feedMessage = await rssParser.keywordSearchIRCCFeed(keyword);
+
+        if (feedMessage.length === 0) {
+            await bot.sendMessage(chatId, "⁉ No news found for the keyword " + keyword);
+            return
+        } else {
+            await bot.sendMessage(chatId, "🇨🇦 Here are the news for the keyword: " + keyword + " 🇨🇦");
+        }
+
+        // Send Message, iterate and send one message per item
+        for (const item of feedMessage) {
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
+        }
+    } catch (error) {
+        await bot.sendMessage(chatId, "⁉ Error fetching feed, please try again. ");
+        console.error("Error fetching feed: " + error.stack)
+
+    }
+
+})
 
 
 bot.onText("/full", async (msg) => {
@@ -267,12 +303,44 @@ bot.onText("/full", async (msg) => {
         let feedMessage = feedResult.items
         // Send Message, iterate and send one message per item
         for (const item of feedMessage) {
-            await bot.sendMessage(chatId, item.title + "\n " + rssParser.formatDate(item.pubDate) + "\n" + item.link);
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.pubDate) + "\n" + item.link);
         }
     } catch (error) {
         await bot.sendMessage(chatId, "⁉ Error fetching feed, please try again. ");
         console.error("Error fetching feed: " + error.stack);
     }
+})
+
+bot.onText("/latest_speech", async(msg) =>{
+    const chatId = msg.chat.id;
+    logger.logUserInteraction(bot, msg);
+    const logString = logger.parseLogToString(bot, msg);
+    logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
+
+    bot.sendMessage(chatId, "🇨🇦 Fetching the last 10 speech news, this might take a few seconds... 🙏 🇨🇦");
+
+    try {
+        let speechData = await speechNewsParser.getStoredSpeechArticles();
+
+        speechData = speechData.slice(0, 10);
+        
+        if (speechData.length === 0) {
+            await bot.sendMessage(chatId, "⁉ No speech news found");
+            return
+        } else {
+            await bot.sendMessage(chatId, "🇨🇦 Here are the latest speech news 🇨🇦");
+        }
+
+        // Send Message, iterate and send one message per item
+        for (const item of speechData) {
+            await bot.sendMessage(chatId, item.title + "\n " + utils.formatDate(item.date) + "\n" + item.url);
+        }
+    } catch(error){
+        await bot.sendMessage(chatId, "⁉ Error fetching speech news, please try again. ");
+        console.error("Error fetching speech news: " + error.stack);
+    }
+
+
 })
 
 bot.onText("/last_draws", async (msg) => {
@@ -313,9 +381,28 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
     }
 })
 
+const classFilterMap = {
+    "CEC": "Canadian Experience Class",
+    "FSW": "Federal Skilled Worker",
+    "FST": "Federal Skilled Trades",
+    "PNP": "Provincial Nominee Program",
+    "FLP": "French language proficiency",
+    "TO": "Trade occupations",
+    "HO": "Healthcare occupations",
+    "STEM": "STEM occupations",
+    "GEN" : "General",
+    "TRAN": "Transport occupations",
+    "AGRI": "Agriculture and agri-food occupations",
+}
+
 bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const filterCode = match[1]; //captured regex response
+
+    if(!classFilterMap[filterCode.toUpperCase()]){
+        await bot.sendMessage(chatId, "⁉ Invalid filter code. Please use a valid code (see /help for the list of valid codes).");
+    }
+    
 
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
@@ -323,6 +410,8 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
     try {
         let [drawData, subclassDrawData] = await irccDrawScraper.filterDraws(filterCode, 300);
+
+
 
         let toMessageDrawData = drawData.length > 10 ? drawData.slice(0, 10) : drawData
 
@@ -333,11 +422,11 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
             toMessageDrawData = drawData.length > 10 ? drawData.slice(0, 10) : drawData
         }
 
-        await bot.sendMessage(chatId, `🇨🇦Showing the last 10 draws for ${filterCode}🇨🇦`);
+        await bot.sendMessage(chatId, `🇨🇦Showing the last 10 draws for ${classFilterMap[filterCode.toUpperCase()]}🇨🇦`);
 
         for (const draw of toMessageDrawData) {
             await bot.sendMessage(chatId, `Draw Number: ${draw.drawNumber}\nDate: ${draw.date}\n👉CRS: ${draw.crs}\n👉Class: ${draw.class}\n👉Sub-class: ${draw.subclass}\n👉Draw Size: ${draw.drawSize}`);
-        }
+        }        
 
         // Analyze draws 
         let analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
@@ -347,7 +436,7 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
 
         if (analyzedData.length < 2) {
-            await bot.sendMessage(chatId, "⁉ Not enough specific subclass data to analyze the rolling average CRS.");
+            await bot.sendMessage(chatId, "⁉ Not enough specific draw class data to analyze the rolling average CRS.");
             return
         } else if (analyzedData.length == 0) {
             await bot.sendMessage(chatId, "⁉ There is no subclass data to analyze the rolling average CRS.");

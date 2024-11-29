@@ -1,7 +1,5 @@
-const irccDrawScraper = require('./irccDrawScraper')
-const irccDrawAnalyzer = require('./irccDrawAnalyzer')
-const FormData = require('form-data');
-const ChartJsImage = require('chartjs-to-image'); // Import chartjs-to-image
+import {analyzeCRSRollingAverage} from './irccDrawAnalyzer.js';
+import ChartJsImage from 'chartjs-to-image'; // Import chartjs-to-image
 // Get the data
 
 
@@ -14,7 +12,7 @@ const ChartJsImage = require('chartjs-to-image'); // Import chartjs-to-image
  */
 const createChartForRolling = async (chat_id, bot_token,drawData = null, analyzedData = null, chartTitle = "Rolling Average CRS") => {
     if (!analyzedData) {
-        analyzedData = irccDrawAnalyzer.analyzeCRSRollingAverage(drawData);
+        analyzedData = analyzeCRSRollingAverage(drawData);
     }
 
     // Sort the analyzedData by date
@@ -73,6 +71,4 @@ const createChartForRolling = async (chat_id, bot_token,drawData = null, analyze
 
 }
 
-module.exports = {
-    createChartForRolling
-}
+export default {createChartForRolling};

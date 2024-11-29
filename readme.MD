@@ -10,7 +10,7 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
     - /help - List down all the possible commands
 
     News: 
-    - /latest - Get the latest news
+    - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
     - /full - Get the full news feed
 
@@ -54,4 +54,6 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 - [ ] Improve chart headline to include specific draw class
 - [ ] Improve styling of chart (red primary color)
 
-
+## Test Branches
+- [ ] FAQ Menu feat/faqmenu
+- [ ] Search news by keyword feat/menusearch
