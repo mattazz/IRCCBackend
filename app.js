@@ -69,6 +69,7 @@ bot.setMyCommands([
     { command: '/latest_news', description: 'Get the latest news' },
     { command: '/search_news', description: 'Search for news by keyword (ex. /search_news Express Entry)' },
     { command: '/month', description: 'Get news for a specific month (ex. /month January)' },
+    { command: '/latest_speech', description: 'Get the last 10 official speeches' },
     { command: '/last_draws', description: 'Get the last 5 IRCC draws' },
     { command: '/draws', description: 'Get the last [number] IRCC draws (ex. /draws 10)' },
     { command: '/filter_draws', description: 'Filter draws by class (ex. /filter_draws CEC)' }
@@ -105,6 +106,7 @@ bot.onText(/\/start/, (msg) => {
     - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
     - /search_news [keyword] - Search for news by keyword (e.g., /search_news Express Entry)
+    - /latest_speech - Get the last 10 news regarding official speeches
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
@@ -142,6 +144,7 @@ bot.onText(/\/help/, (msg) => {
     - /latest_news - Get the latest news
     - /month [month] - Get news for a specific month (e.g., /month January)
     - /search_news [keyword] - Search for news by keyword (e.g., /search_news Express Entry)
+    - /latest_speech - Get the last 10 news regarding official speeches
 
     Draws:
     - /last_draws - Get the last 5 IRCC draws
