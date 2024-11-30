@@ -22,7 +22,7 @@ async function scrapeSpeechNews() {
 
     const url = "https://www.canada.ca/en/news/advanced-news-search/news-results.html?typ=speeches&dprtmnt=departmentofcitizenshipandimmigration&start=2015-01-01&end="
 
-    await page.goto(url);
+    await page.goto(url, {waitUntil: 'networkidle2', timeout: 60000});
 
     /**
      * Structure: 
