@@ -9,11 +9,13 @@ import mongoDBConnect from './mongoDBConnect.js'
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: "../../.env" })
 
+const MAX_RETRIES = 8;
+
 /** Scrapes the IRCC speeches news feed.
  * 
  * @returns {Promise<Array>} An array of objects containing the scraped speech news.
  */
-async function scrapeSpeechNews() {
+async function scrapeSpeechNews(retries = 0) {
     console.log(`[scrapeSpeechNews] => Starting scraping...`);
     
 
@@ -22,13 +24,28 @@ async function scrapeSpeechNews() {
 
     const url = "https://www.canada.ca/en/news/advanced-news-search/news-results.html?typ=speeches&dprtmnt=departmentofcitizenshipandimmigration&start=2015-01-01&end="
 
-    await page.goto(url, {waitUntil: 'networkidle2', timeout: 60000});
+
+    try{
+        await page.goto(url, {waitUntil: 'networkidle2', timeout: 60000});
+    } catch(error){
+        console.log(`[scrapeSpeechNews] => Error during page.goto: ${error}`);
+        if(retries < MAX_RETRIES){
+            console.log(`[scrapeSpeechNews] => Retrying... (${retries + 1}/${MAX_RETRIES})`);
+            await browser.close();
+            return scrapeSpeechNews(retries + 1);
+        } else{
+            console.error(`[scrapeSpeechNews] => Failed after ${MAX_RETRIES} retries.`);
+            await browser.close();
+            throw error;
+        }
+    }
+
 
     /**
      * Structure: 
      * <article.item>
      *  <h3.h5>
-     *    <a>
+     *<a>
      *      [Link to article]
      *    </a>
      *    [Title of article]
