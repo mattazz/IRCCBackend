@@ -691,6 +691,11 @@ The Newfoundland and Labrador Provincial Nominee Program (NLPNP) facilitates the
 `)
         await bot.sendMessage(chatId, "🧐 You can find more about Newfoundland and Labrador's Provincial Nomination Program (PNP) here: https://www.gov.nl.ca/immigration/immigrating-to-newfoundland-and-labrador/provincial-nominee-program/overview/", menuContainer.backToPNPMenu);
     } else if (query.data === "nt") {
+        await bot.sendMessage(chatId, `🇨🇦 To immigrate here through the Northwest Territories Nominee Program, you need to either:
+
+✅ be ready to open, purchase or invest in a business in the NWT; or
+✅ have a job offer from an employer in the NWT.
+`)
         await bot.sendMessage(chatId, "🧐 You can find more about Northwest Territories' Provincial Nomination Program (PNP) here: https://www.immigratenwt.ca/immigrate-here", menuContainer.backToPNPMenu);
     } else if (query.data === "ns") {
         await bot.sendMessage(chatId, `
