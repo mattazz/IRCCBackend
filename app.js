@@ -587,7 +587,6 @@ You can find the tool here: https://www.canada.ca/en/immigration-refugees-citize
                 ]
             }
         }
-
         await bot.sendMessage(chatId, `
         🇨🇦 There are 3 immigration programs managed through Express Entry:
 
