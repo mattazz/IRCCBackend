@@ -238,7 +238,7 @@ bot.onText("/latest_news", async (msg) => {
 
     try {
         // get latest month
-        input_month = new Date().toLocaleString('default', { month: 'long' });
+        let input_month = new Date().toLocaleString('default', { month: 'long' });
 
         // Fetch RSS Feed
         let feedMessage = await rssParser.fetchIRCCFeed_Monthly(input_month);
@@ -368,6 +368,8 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
     logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
+
+    await bot.sendMessage(chatId, "🇨🇦 Fetching the last " + input + " draws, this might take a few seconds... 🙏 🇨🇦");
 
     try {
         let drawData = await irccDrawScraper.parseDraws(input);

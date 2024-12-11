@@ -4,29 +4,47 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import mongoDBConnect from './mongoDBConnect.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: "../../.env" })
+
+const MAX_RETRIES = 8;
 
 /** Scrapes the IRCC speeches news feed.
  * 
  * @returns {Promise<Array>} An array of objects containing the scraped speech news.
  */
-async function scrapeSpeechNews() {
-    console.log("Starting to scrape...");
+async function scrapeSpeechNews(retries = 0) {
+    console.log(`[scrapeSpeechNews] => Starting scraping...`);
+    
 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
 
     const url = "https://www.canada.ca/en/news/advanced-news-search/news-results.html?typ=speeches&dprtmnt=departmentofcitizenshipandimmigration&start=2015-01-01&end="
 
-    await page.goto(url);
+    try{
+        await page.goto(url, {waitUntil: 'networkidle2', timeout: 60000});
+    } catch(error){
+        console.log(`[scrapeSpeechNews] => Error during page.goto: ${error}`);
+        if(retries < MAX_RETRIES){
+            console.log(`[scrapeSpeechNews] => Retrying... (${retries + 1}/${MAX_RETRIES})`);
+            await browser.close();
+            return scrapeSpeechNews(retries + 1);
+        } else{
+            console.error(`[scrapeSpeechNews] => Failed after ${MAX_RETRIES} retries.`);
+            await browser.close();
+            throw error;
+        }
+    }
+
 
     /**
      * Structure: 
      * <article.item>
      *  <h3.h5>
-     *    <a>
+     *<a>
      *      [Link to article]
      *    </a>
      *    [Title of article]
@@ -120,7 +138,7 @@ async function pushOneToDB(articleObject) {
         })
         await speechArticle.save();
     } catch (error) {
-        console.error(`Error during database connection: ${error}`);
+        console.error(`[pushOneToDB] => Error during database connection: ${error}`);
     } finally {
         mongoose.connection.close();
     }
@@ -131,10 +149,15 @@ async function pushOneToDB(articleObject) {
  */
 async function pushAllToDB(articleList) {
     try {
-        await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
-
+        console.log(`[pushAllToDB] => Connecting to database...`);
+        // await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        await mongoDBConnect.connectToDatabase();
+        console.log(`[pushAllToDB] => Deleting all documents...`);
+        
         await deleteAllDocuments();
 
+        console.log(`[pushAllToDB] => Pushing to database...`);
+        
         for (const article of articleList) {
             console.log(`Pushing to database...`);
             const speechArticle = new SpeechArticle({
@@ -147,9 +170,10 @@ async function pushAllToDB(articleList) {
             console.log(`Pushed ${article.title} to database.`);
         }
     } catch (error) {
-        console.error(`Error during database connection: ${error}`);
+        console.error(`[pushAllToDB] => Error during database connection: ${error}`);
     } finally {
-        await mongoose.connection.close();
+        // await mongoose.connection.close();
+        await mongoDBConnect.closeDatabaseConnection();
         console.log(`Disconnected from database.`);
     }
 }
@@ -159,11 +183,11 @@ async function pushAllToDB(articleList) {
  */
 async function deleteAllDocuments() {
     try {
-        console.log(`Deleting all documents...`);
+        console.log(`[deleteAllDocuments] => Deleting all documents...`);
         await SpeechArticle.deleteMany({});
-        console.log(`Deleted all documents.`);
+        console.log(`[deleteAllDocuments] => Deleted all documents.`);
     } catch (error) {
-        console.error(`Error during database connection: ${error}`);
+        console.error(`[deleteAllDocuments] => Error during database connection: ${error}`);
     }
 }
 
@@ -172,7 +196,14 @@ async function deleteAllDocuments() {
  */
 async function scheduledScrapeAndPush() {
     let result = await scrapeSpeechNews();
-    pushAllToDB(result);
+    if (result.length === 0) {
+        console.log(`[scheduledScrapeAndPush] => No articles found.`);
+        return;
+    } else if (result.length > 0) {
+        console.log(`[scheduledScrapeAndPush] => Found ${result.length} articles.`);
+    }
+    console.log(`[scheduledScrapeAndPush] => Pushing to database...`);
+    await pushAllToDB(result);
 }
 
 /**
@@ -182,12 +213,14 @@ async function scheduledScrapeAndPush() {
 async function getStoredSpeechArticles() {
     try {
         await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
+        // mongoDBConnect.connectToDatabase();
         const articles = await SpeechArticle.find({});
         return articles;
     } catch (error) {
         console.error(`Error during database connection: ${error}`);
     } finally {
         await mongoose.connection.close();
+        // mongoDBConnect.closeDatabaseConnection();
     }
 }
 
