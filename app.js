@@ -596,8 +596,30 @@ You can find the tool here: https://www.canada.ca/en/immigration-refugees-citize
 ✅ Federal Skilled Worker Program
 ✅ Federal Skilled Trades Program
 
-Click on any of the buttons below to learn more about each program.
+Click on any of the buttons below to learn more about each program. ↓
 `, subMenu)
+    }
+    else if (query.data === "ee_crs") {
+        await bot.sendMessage(chatId, `🇨🇦 As stated in the IRCC website, to improve your CRS score, you can:
+
+While you’re in the pool, you can improve your score and increase your chances of being invited to apply by:
+
+✅ getting a valid job offer by
+
+✅ using Job Bank
+
+✅ promoting yourself to employers in Canada using private-sector job boards
+
+✅ contacting provinces and territories and asking them to consider you for a Provincial Nominee Program
+
+✅ improving your language score
+
+✅ improving your education
+
+✅ gaining more skilled work experience
+
+❓ You can find out more here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/submit-profile/waiting-pool.html#improve
+`, menuContainer.backToEEMenu)
     }
     /**
      * Fill in this part
@@ -626,11 +648,53 @@ For more information, visit the official IRCC page: https://www.canada.ca/en/imm
 `, menuContainer.backToEEPrograms)
     }
     else if (query.data === "fsw") {
-        await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`, menuContainer.backToEEPrograms)
+        await bot.sendMessage(chatId, `🇨🇦 The Foreign Skilled Worker Program`)
+        await bot.sendMessage(chatId, `👷‍♂️ The Federal Skilled Worker Program is for skilled workers who have work experience and want to become permanent residents. 🔨`)
+
+        await bot.sendMessage(chatId, `📝 In general, you must:
+
+✅ Meet all the minimum requirements for:
+
+- skilled work experience
+- language ability
+- education
+
+✅ Skilled work in TEER 0 / 1 / 2 / 3 (Must show proof of work experience)
+
+✅ Language ability in English or French (Must show proof of language ability)
+
+✅ If you went to school in Canada, you must have a certificate, diploma or degree from a Canadian
+
+- secondary institution (high school) or
+- post-secondary institution
+
+❓If you have foreign education, you must have
+
+- a completed educational credential and
+- an Educational Credential Assessment for immigration purposes that is from a designated organization 
+`)
+
+        await bot.sendMessage(chatId, `❓ To know the exact requirements of the Federal Skilled Worker Program, visit the official IRCC page: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/eligibility/federal-skilled-workers.html`, menuContainer.backToEEPrograms)
+
+
     }
     else if (query.data === "fst") {
-        await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`, menuContainer.backToEEPrograms)
+        await bot.sendMessage(chatId, `🇨🇦 The Federal Skilled Trades Program`)
+        await bot.sendMessage(chatId, `👷‍♂️ The Federal Skilled Trades Program is for skilled workers who want to become permanent residents based on being qualified in a skilled trade. 🔨`)
+        await bot.sendMessage(chatId, `📝 In general, you must:
+✅ Meet all the minimum requirements for your
+
+- skilled trades work experience
+- job offer or certificate of qualification
+- language ability
+
+            `)
+
+        await bot.sendMessage(chatId, `❓ To know the exact requirements of the Federal Skilled Trades Program, visit the official IRCC page: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/eligibility/skilled-trades.html`, menuContainer.backToEEPrograms)
     }
+
+
+
     /**
      * Learn about Provincial Nomination Programs
      */
