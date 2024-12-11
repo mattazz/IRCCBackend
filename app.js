@@ -524,7 +524,7 @@ bot.on('callback_query', async (query) => {
                 ]
             }
         };
-        bot.sendMessage(chatId, "✅ Click on the menu buttons below to navigate through the FAQ sections. More resources will be added in the futre. ", menuContainer.mainMenu);
+        bot.sendMessage(chatId, "✅ Click on the menu buttons below to navigate through the FAQ sections. More resources will be added in the future. ", menuContainer.mainMenu);
     }
     /**
      * Immigrating through Express Entry
@@ -537,16 +537,18 @@ bot.on('callback_query', async (query) => {
                     [{ text: "What are the general requirements for Express Entry?", callback_data: "ee_req" }],
                     [{ text: "What are the Express Entry programs available?", callback_data: "ee_progs" }],
                     [{ text: "How do I improve my CRS score?", callback_data: "ee_crs" }],
-                    [{ text: "Back to Main Menu", callback_data: "main_menu" }],
+                    [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
                 ]
             }
         }
         await bot.sendMessage(chatId, `Express Entry is an online system that IRCC uses to manage immigration applications from skilled workers.
 
-There are 3 immigration programs managed through Express Entry:
+There are 3 main immigration programs managed through Express Entry:
 
 ✅ Canadian Experience Class
+
 ✅ Federal Skilled Worker Program
+
 ✅ Federal Skilled Trades Program
 `);
         await bot.sendMessage(chatId, "To know more, visit the official IRCC site here: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/works.html", subMenu);
@@ -593,6 +595,8 @@ You can find the tool here: https://www.canada.ca/en/immigration-refugees-citize
 ✅ Canadian Experience Class
 ✅ Federal Skilled Worker Program
 ✅ Federal Skilled Trades Program
+
+Click on any of the buttons below to learn more about each program.
 `, subMenu)
     }
     /**
