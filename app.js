@@ -688,7 +688,35 @@ For more information, visit the official IRCC page: https://www.canada.ca/en/imm
 - job offer or certificate of qualification
 - language ability
 
-            `)
+✅ Skill Trades work experience
+- have at least 2 years of full-time work experience (or an equal amount of part-time work experience) in a skilled trade within the 5 years before you apply
+- meet the job requirements for that skilled trade as set out in the National Occupational Classification (NOC)
+- show that you performed:
+    🔨 the actions in the lead statement of the occupational description in the NOC
+    🔨 most of the main duties listed
+
+✅ Job offer or certificate of qualification
+- valid job offer of full-time employment for a total period of at least 1 year or
+- certificate of qualification in your skilled trade issued by a Canadian provincial, territorial or federal authority
+
+✅ Certificate of qualification
+- A certificate of qualification proves you’re qualified to work in a certain skilled trade in Canada. This means you:
+    📝 passed a certification exam
+    📝 meet all the requirements to practise your trade in the province or territory that issued your certificate
+
+- This certificate is issued by
+    📝 the provincial or territorial body that governs trades in their province or territory, or
+a federal authority
+
+✅ Language ability in English or French (Must show proof of language ability)
+
+✅ If you went to school in Canada, you must have a certificate, diploma or degree from a Canadian
+
+- secondary institution (high school) or
+- post-secondary institution
+
+✅ Proof of funds to support yourself and your family
+`)
 
         await bot.sendMessage(chatId, `❓ To know the exact requirements of the Federal Skilled Trades Program, visit the official IRCC page: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/eligibility/skilled-trades.html`, menuContainer.backToEEPrograms)
     }
