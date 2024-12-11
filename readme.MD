@@ -48,12 +48,13 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 ## Analyzer
 - [ ] Evaluate the accuracy of the rolling average
 ## News
-- [ ] Add press meeting news and other relevant news
+- [x] Add press meeting news and other relevant news
+- [ ] Change /latest_speech to only show the current month news
 
 ## Chart
-- [ ] Improve chart headline to include specific draw class
-- [ ] Improve styling of chart (red primary color)
+- [x] Improve chart headline to include specific draw class
+- [x] Improve styling of chart (red primary color)
 
 ## Test Branches
-- [ ] FAQ Menu feat/faqmenu
-- [ ] Search news by keyword feat/menusearch
+- [x] FAQ Menu feat/faqmenu
+- [x] Search news by keyword feat/menusearch
