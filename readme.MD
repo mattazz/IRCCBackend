@@ -44,6 +44,7 @@ Welcome to the IRCC News Bot! 🤖🇨🇦
 - [x] Filter draws by class
 - [x] Specify occupations part of the draw
 - [ ] Add link to the draw 
+- [ ] Add scheduled db upload of most recent draws, and replace the bot message with a query to the db instead of a scrape
   
 ## Analyzer
 - [ ] Evaluate the accuracy of the rolling average
