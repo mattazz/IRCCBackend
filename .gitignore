@@ -93,3 +93,4 @@ MobileBackups.trash
 tmbootpicker.efi
 
 docs/*
+!docs/*.md
