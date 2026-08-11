@@ -78,34 +78,44 @@ const parseDraws = async (max_draw = 5) => {
 const classFilterMap = utils.classFilterMap;
 
 /**
+ * Filters an already-fetched list of parsed draws by class filter code.
+ * Pure filtering, no network call - shared by the live filterDraws below and by
+ * dataCache-backed callers that already have parsed draws in memory.
+ *
+ * @param {Array} parsedDraws Draws as returned by parseDraws().
+ * @param {string} filter Class filter code, e.g. "CEC" (see utils.classFilterMap).
+ * @returns {[Array, Array]} [classFilteredDraws, subclassFilteredDraws]
+ */
+const filterParsedDraws = (parsedDraws, filter) => {
+    filter = filter.toUpperCase();
+
+    let filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
+    let subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]));
+
+    if (filteredDraws.length < 10) {
+        subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
+    } else {
+        subclassFilteredDraws = []
+    }
+
+    return [filteredDraws, subclassFilteredDraws]
+}
+
+/**
  * Filters the draws based on the specified filter and returns the last 10 draws.
- * 
+ *
  * @param {*} filter String filter to apply to the draws.
  * @param {*} max_num  Maximum number of draws to return.
- * @returns 
+ * @returns
  */
 const filterDraws = async (filter = "CEC", max_num = 10) => {
-    
-
     try {
-        const parsedDraws = await parseDraws(max_num); 
-
-        filter = filter.toUpperCase();
-
-        let filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))          
-        let subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]));                
-        
-        if (filteredDraws.length < 10){
-            subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
-        } else{
-            subclassFilteredDraws = []
-        }
-
-        return [filteredDraws, subclassFilteredDraws]
+        const parsedDraws = await parseDraws(max_num);
+        return filterParsedDraws(parsedDraws, filter)
     } catch (error) {
         console.error("Error filtering draws:", error);
         throw error;
     }
 }
 
-export default {parseDraws, filterDraws}
+export default {parseDraws, filterDraws, filterParsedDraws}

@@ -12,6 +12,7 @@ import utils from './src/utils/utils.js';
 import speechNewsParser from './src/utils/speechNewsParser.js';
 import mongoDBConnect from './src/utils/mongoDBConnect.js';
 import dataCache from './src/utils/dataCache.js';
+import apiRouter from './src/routes/api.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -40,13 +41,6 @@ app.use(cors({
     }
 }))
 
-/**
- * Sends a standard JSON error response so every /api/* route responds consistently.
- */
-function sendJsonError(res, status, message) {
-    res.status(status).json({ error: message });
-}
-
 // Connect to DB once at startup and keep the connection alive for the life of the
 // process (mongoose queues queries until connected, so this doesn't block routes below).
 mongoDBConnect.connectToDatabase().catch(error => {
@@ -66,16 +60,7 @@ app.get('/', (req, res) => {
     res.send('Hello, this is the IRCC News Bot server.');
 });
 
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        database: mongoDBConnect.isConnected() ? 'connected' : 'disconnected',
-        cache: {
-            news: dataCache.getNewsCache().lastUpdated,
-            draws: dataCache.getDrawsCache().lastUpdated
-        }
-    });
-});
+app.use('/api', apiRouter);
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);

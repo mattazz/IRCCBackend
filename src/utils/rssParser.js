@@ -1,6 +1,4 @@
-import axios from 'axios';
 import Parser from 'rss-parser';
-import utils from './utils.js';
 
 
 const irccNewsURL = "https://api.io.canada.ca/io-server/gc/news/en/v2?dept=departmentofcitizenshipandimmigration&sort=publishedDate&orderBy=desc&publishedDate%3E=2021-07-23&pick=50&format=atom&atomtitle=Immigration,%20Refugees%20and%20Citizenship%20Canada"
@@ -28,14 +26,7 @@ const monthMapping = {
 async function fetchFullIRCCFeed() {
     let parser = new Parser();
     let feed = await parser.parseURL(irccNewsURL);
-
-    // console.log(feed.title);
-
-    feed.items.forEach(item => {
-        // console.log(item);
-    })
     return feed
-
 }
 
 /**
@@ -60,39 +51,55 @@ function validateUserMonthInput(input_month, returnType = "number") {
 }
 
 /**
+ * Filters an already-fetched list of feed items down to a given month (current year only).
+ * Pure filtering, no network call - shared by the live monthly fetch below and by
+ * dataCache-backed callers that already have a full feed in memory.
+ *
+ * @param {Array} items Feed items (as returned by fetchFullIRCCFeed().items).
+ * @param {number} input_month_num Month number (0-11), as returned by validateUserMonthInput.
+ * @returns {Array} Items published in that month of the current year.
+ */
+function filterItemsByMonth(items, input_month_num) {
+    let currentYear = new Date().getFullYear();
+    return items.filter(item => {
+        let itemDate = new Date(item.pubDate);
+        return itemDate.getMonth() === input_month_num && itemDate.getFullYear() === currentYear;
+    })
+}
+
+/**
+ * Filters an already-fetched list of feed items by keyword in the title or summary.
+ * Pure filtering, no network call.
+ *
+ * @param {Array} items Feed items (as returned by fetchFullIRCCFeed().items).
+ * @param {string} keyword Keyword to search for.
+ * @returns {Array} Items whose title or summary contains the keyword.
+ */
+function filterItemsByKeyword(items, keyword) {
+    return items.filter(item => {
+        return item.summary.toLowerCase().includes(keyword.toLowerCase()) ||
+            item.title.toLowerCase().includes(keyword.toLowerCase());
+    });
+}
+
+/**
  * Fetches the IRCC news feed for the specified month.
- * 
+ *
  * @param {*} input_month The month to filter the news feed.
  * @returns {Promise<Array>} An array of objects containing the news feed for the specified month.
  */
 async function fetchIRCCFeed_Monthly(input_month) {
-    let parser = new Parser
     let feed = await fetchFullIRCCFeed();
 
     // validate input month
     let input_month_lower = validateUserMonthInput(input_month);
 
-    let currentYear = new Date().getFullYear();
-
-    // Filter items based on the current month and year
-    let monthlyItems = feed.items.filter(item => {
-        let itemDate = new Date(item.pubDate);
-        return itemDate.getMonth() === input_month_lower && itemDate.getFullYear() === currentYear;
-    })
-
-    return monthlyItems
+    return filterItemsByMonth(feed.items, input_month_lower);
 }
 
 async function keywordSearchIRCCFeed(keyword) {
     let feed = await fetchFullIRCCFeed();
-
-    // Filter items based on the keyword in either the summary or title
-    let keywordItems = feed.items.filter(item => {
-        return item.summary.toLowerCase().includes(keyword.toLowerCase()) ||
-            item.title.toLowerCase().includes(keyword.toLowerCase());
-    });
-
-    return keywordItems
+    return filterItemsByKeyword(feed.items, keyword);
 }
 
 
@@ -100,5 +107,7 @@ export default {
     fetchFullIRCCFeed,
     fetchIRCCFeed_Monthly,
     validateUserMonthInput,
-    keywordSearchIRCCFeed
+    keywordSearchIRCCFeed,
+    filterItemsByMonth,
+    filterItemsByKeyword
 }
