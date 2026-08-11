@@ -5,11 +5,11 @@ dotenv.config();
 
 const connectToDatabase = async () => {
     if (mongoose.connection.readyState === 0) {
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI is not set - see readme.MD for the required .env variables');
+        }
         try {
-            await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true
-            });
+            await mongoose.connect(process.env.MONGODB_URI);
             console.log('Connected to database');
         } catch (error) {
             console.error('Error connecting to database:', error);
@@ -30,4 +30,6 @@ const closeDatabaseConnection = async () => {
     }
 };
 
-export default { connectToDatabase, closeDatabaseConnection }
+const isConnected = () => mongoose.connection.readyState === 1;
+
+export default { connectToDatabase, closeDatabaseConnection, isConnected }

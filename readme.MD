@@ -45,8 +45,9 @@ Create a `.env` file in the project root:
 | `WEBHOOK_PATH` | Path Telegram posts updates to (e.g. `/webhook`) |
 | `DEV_MODE` | `true` to use the dev token/URL instead of production |
 | `PORT` | Port the Express server listens on (defaults to `3000`) |
-| `MONGODB_PASSWORD` | Password for the MongoDB Atlas user storing speech articles |
+| `MONGODB_URI` | Full MongoDB Atlas connection string (`mongodb+srv://user:password@host/telegram_bot?...`) for the database storing speech articles |
 | `ADMIN_USER_ID` | Telegram chat ID that receives interaction logs |
+| `FRONTEND_ORIGIN` | Comma-separated list of non-`localhost` origins allowed to call the `/api/*` routes (any `localhost` port is always allowed) |
 
 Run the server:
 

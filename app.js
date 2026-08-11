@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import TelegramBot from 'node-telegram-bot-api';
 
 import rssParser from './src/utils/rssParser.js';
@@ -9,6 +10,8 @@ import chartGenerator from './src/utils/chartGenerator.js';
 import irccDrawAnalyzer from './src/utils/irccDrawAnalyzer.js';
 import utils from './src/utils/utils.js';
 import speechNewsParser from './src/utils/speechNewsParser.js';
+import mongoDBConnect from './src/utils/mongoDBConnect.js';
+import dataCache from './src/utils/dataCache.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -16,7 +19,43 @@ dotenv.config();
 const app = express()
 app.use(bodyParser.json())
 
-// Connect to DB - eventually
+/**
+ * CORS: any localhost origin (any port) is always allowed, for local frontend dev.
+ * Non-local origins must be listed in FRONTEND_ORIGIN (comma-separated) - update that
+ * env var once the frontend has a real domain (e.g. once it's staged on Heroku).
+ */
+const localhostOriginRegex = /^https?:\/\/localhost(:\d+)?$/;
+const allowedOrigins = (process.env.FRONTEND_ORIGIN || '')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean);
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // No Origin header = non-browser request (curl, server-to-server, Telegram webhook) - always allow.
+        if (!origin || localhostOriginRegex.test(origin) || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+}))
+
+/**
+ * Sends a standard JSON error response so every /api/* route responds consistently.
+ */
+function sendJsonError(res, status, message) {
+    res.status(status).json({ error: message });
+}
+
+// Connect to DB once at startup and keep the connection alive for the life of the
+// process (mongoose queues queries until connected, so this doesn't block routes below).
+mongoDBConnect.connectToDatabase().catch(error => {
+    console.error('Initial database connection failed:', error);
+});
+
+// Populate the news/draws cache immediately and keep it refreshed on an interval,
+// so /api/* routes never trigger a live IRCC fetch in the request path.
+dataCache.startCacheRefresh();
 
 // Port
 const port = process.env.PORT || 3000
@@ -25,6 +64,17 @@ const port = process.env.PORT || 3000
 
 app.get('/', (req, res) => {
     res.send('Hello, this is the IRCC News Bot server.');
+});
+
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        database: mongoDBConnect.isConnected() ? 'connected' : 'disconnected',
+        cache: {
+            news: dataCache.getNewsCache().lastUpdated,
+            draws: dataCache.getDrawsCache().lastUpdated
+        }
+    });
 });
 
 app.listen(port, () => {

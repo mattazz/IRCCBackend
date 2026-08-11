@@ -186,13 +186,14 @@ async function scheduledScrapeAndPush() {
  */
 async function getStoredSpeechArticles() {
     try {
+        // Uses the shared connection opened once at server startup (see mongoDBConnect.connectToDatabase
+        // call in app.js) rather than opening/closing a connection per call.
         await mongoDBConnect.connectToDatabase();
         const articles = await SpeechArticle.find({});
         return articles;
     } catch (error) {
         console.error(`Error during database connection: ${error}`);
-    } finally {
-        await mongoDBConnect.closeDatabaseConnection();
+        return [];
     }
 }
 
