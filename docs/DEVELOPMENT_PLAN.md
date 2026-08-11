@@ -75,7 +75,7 @@ Also extracted pure filtering functions so the bot and the API share logic inste
 Exit criteria: a frontend can fetch every data type the bot can send, as JSON, with no Telegram dependency and no per-request scrape. ✅
 
 ### Phase 3 — Hardening ✅
-- [x] Rate limiting on `/api/*` via `express-rate-limit` — 100 requests / 15 min per IP, `/health` exempt (monitoring pings shouldn't count). Also added `app.set('trust proxy', 1)` in `app.js`, required for the limiter to see real client IPs (and not just Heroku's router IP) once this is deployed there
+- [x] Rate limiting on `/api/*` via `express-rate-limit` — 100 requests / 15 min per IP, `/health` exempt (monitoring pings shouldn't count). Also added `app.set('trust proxy', 1)` in `app.js`, required for the limiter to see real client IPs rather than Heroku's router IP — deployed and live on `ircc-tg-backend`
 - [x] Input validation: `count` query params (`draws/latest`, `speeches/latest`) now clamp to 1–100 via a shared `parsePositiveIntParam` helper in `src/routes/api.js` instead of silently accepting anything; `news/search`'s `q` param now has a max length (100 chars). Month names and class codes were already validated in Phase 2
 - [x] Response shape: dropped Mongoose's internal `__v` field from the speeches query (`speechNewsParser.js`, via projection). Kept `_id` (useful as a frontend list key) and left the draw field names (`drawNumber`/`crs`/`class`/`subclass`/`drawSize`) as-is — no frontend exists yet to say what it'd actually want renamed, and these already match what the Telegram bot exposes. Revisit if the frontend build surfaces a concrete need.
 
