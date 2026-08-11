@@ -1,13 +1,12 @@
 import puppeteer from 'puppeteer';
 import SpeechArticle from '../models/speechArticle.js';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import mongoDBConnect from './mongoDBConnect.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: "../../.env" })
+dotenv.config({ path: join(__dirname, '../../.env') })
 
 const MAX_RETRIES = 8;
 
@@ -68,7 +67,6 @@ async function scrapeSpeechNews(retries = 0) {
     const headingSelector = 'h3.h5';
     const linkSelector = 'a';
     const dateSelector = 'p' //this is outside the heading
-    const summarySelector = 'p' //this is outside the date
 
 
     try {
@@ -88,7 +86,6 @@ async function scrapeSpeechNews(retries = 0) {
 
                 const link = await heading.$(linkSelector);
                 if (link) {
-                    const linkText = await page.evaluate(link => link.textContent, link)
                     const linkHref = await page.evaluate(link => link.href, link)
                     parsedArticle.link = linkHref;
                 }
@@ -124,33 +121,11 @@ async function scrapeSpeechNews(retries = 0) {
 
 /**
  * 
- * @param {Object} articleObject An object containing the article information.
- */
-async function pushOneToDB(articleObject) {
-    try {
-        mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
-
-        const speechArticle = new SpeechArticle({
-            title: articleObject.title,
-            url: articleObject.link,
-            date: articleObject.date,
-            summary: articleObject.summary
-        })
-        await speechArticle.save();
-    } catch (error) {
-        console.error(`[pushOneToDB] => Error during database connection: ${error}`);
-    } finally {
-        mongoose.connection.close();
-    }
-}
-/**
- * 
  * @param {Array<Object>} articleList a list of Objects with the structure {title: string, link: string, date: string, summary: string}
  */
 async function pushAllToDB(articleList) {
     try {
         console.log(`[pushAllToDB] => Connecting to database...`);
-        // await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
         await mongoDBConnect.connectToDatabase();
         console.log(`[pushAllToDB] => Deleting all documents...`);
         
@@ -172,7 +147,6 @@ async function pushAllToDB(articleList) {
     } catch (error) {
         console.error(`[pushAllToDB] => Error during database connection: ${error}`);
     } finally {
-        // await mongoose.connection.close();
         await mongoDBConnect.closeDatabaseConnection();
         console.log(`Disconnected from database.`);
     }
@@ -212,15 +186,13 @@ async function scheduledScrapeAndPush() {
  */
 async function getStoredSpeechArticles() {
     try {
-        await mongoose.connect(`mongodb+srv://mattazz:${process.env.MONGODB_PASSWORD}@testing.h0pbt.mongodb.net/telegram_bot?retryWrites=true&w=majority&appName=Testing`)
-        // mongoDBConnect.connectToDatabase();
+        await mongoDBConnect.connectToDatabase();
         const articles = await SpeechArticle.find({});
         return articles;
     } catch (error) {
         console.error(`Error during database connection: ${error}`);
     } finally {
-        await mongoose.connection.close();
-        // mongoDBConnect.closeDatabaseConnection();
+        await mongoDBConnect.closeDatabaseConnection();
     }
 }
 

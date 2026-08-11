@@ -1,7 +1,5 @@
-import { match } from 'assert';
 import axios from 'axios';
-import { log } from 'console';
-import fs from 'fs';
+import utils from './utils.js';
 
 const drawUrl = "https://www.canada.ca/content/dam/ircc/documents/json/ee_rounds_123_en.json"
 
@@ -77,20 +75,7 @@ const parseDraws = async (max_draw = 5) => {
     
 }
 
-const classFilterMap = {
-    "CEC": "Canadian Experience Class",
-    "FSW": "Federal Skilled Worker",
-    "FST": "Federal Skilled Trades",
-    "PNP": "Provincial Nominee Program",
-    "FLP": "French language proficiency",
-    "TO": "Trade occupations",
-    "HO": "Healthcare occupations",
-    "STEM": "STEM occupations",
-    "GEN" : "General",
-    "TRAN": "Transport occupations",
-    "AGRI": "Agriculture and agri-food occupations",
-}
-
+const classFilterMap = utils.classFilterMap;
 
 /**
  * Filters the draws based on the specified filter and returns the last 10 draws.

@@ -1,6 +1,5 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import axios from 'axios';
 import TelegramBot from 'node-telegram-bot-api';
 
 import rssParser from './src/utils/rssParser.js';
@@ -59,10 +58,6 @@ const bot = new TelegramBot(token, { webHook: true })
 
 bot.setWebHook(`${url}${webhookPath}`);
 
-app.post('/webhook', (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
-})
 // Set up command menu
 bot.setMyCommands([
     { command: '/help', description: 'Get the bot commands' },
@@ -88,8 +83,6 @@ bot.on('message', (msg) => {
 
 app.post(webhookPath, (req, res) => {
     bot.processUpdate(req.body);
-    console.log(req.body);
-
     res.sendStatus(200);
 })
 
@@ -229,17 +222,17 @@ bot.onText(/\/month (.+)/, async (msg, match) => {
     }
 });
 
-bot.onText("/latest_news", async (msg) => {
+bot.onText(/\/latest_news/, async (msg) => {
     const chatId = msg.chat.id;
 
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
     logger.sendLogToPrimary(bot, process.env.ADMIN_USER_ID, logString);
 
-    try {
-        // get latest month
-        let input_month = new Date().toLocaleString('default', { month: 'long' });
+    // get latest month
+    let input_month = new Date().toLocaleString('default', { month: 'long' });
 
+    try {
         // Fetch RSS Feed
         let feedMessage = await rssParser.fetchIRCCFeed_Monthly(input_month);
 
@@ -290,7 +283,7 @@ bot.onText(/\/search_news (.+)/, async (msg, match) => {
 })
 
 
-bot.onText("/full", async (msg) => {
+bot.onText(/\/full/, async (msg) => {
     const chatId = msg.chat.id;
 
     logger.logUserInteraction(bot, msg);
@@ -311,7 +304,7 @@ bot.onText("/full", async (msg) => {
     }
 })
 
-bot.onText("/latest_speech", async(msg) =>{
+bot.onText(/\/latest_speech/, async(msg) =>{
     const chatId = msg.chat.id;
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
@@ -343,7 +336,7 @@ bot.onText("/latest_speech", async(msg) =>{
 
 })
 
-bot.onText("/last_draws", async (msg) => {
+bot.onText(/\/last_draws/, async (msg) => {
     const chatId = msg.chat.id;
 
     logger.logUserInteraction(bot, msg);
@@ -383,19 +376,7 @@ bot.onText(/\/draws (.+)/, async (msg, match) => {
     }
 })
 
-const classFilterMap = {
-    "CEC": "Canadian Experience Class",
-    "FSW": "Federal Skilled Worker",
-    "FST": "Federal Skilled Trades",
-    "PNP": "Provincial Nominee Program",
-    "FLP": "French language proficiency",
-    "TO": "Trade occupations",
-    "HO": "Healthcare occupations",
-    "STEM": "STEM occupations",
-    "GEN" : "General",
-    "TRAN": "Transport occupations",
-    "AGRI": "Agriculture and agri-food occupations",
-}
+const classFilterMap = utils.classFilterMap;
 
 bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
@@ -403,8 +384,8 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
     if(!classFilterMap[filterCode.toUpperCase()]){
         await bot.sendMessage(chatId, "⁉ Invalid filter code. Please use a valid code (see /help for the list of valid codes).");
+        return
     }
-    
 
     logger.logUserInteraction(bot, msg);
     const logString = logger.parseLogToString(bot, msg);
@@ -437,11 +418,11 @@ bot.onText(/\/filter_draws (.+)/, async (msg, match) => {
 
 
 
-        if (analyzedData.length < 2) {
-            await bot.sendMessage(chatId, "⁉ Not enough specific draw class data to analyze the rolling average CRS.");
-            return
-        } else if (analyzedData.length == 0) {
+        if (analyzedData.length === 0) {
             await bot.sendMessage(chatId, "⁉ There is no subclass data to analyze the rolling average CRS.");
+            return
+        } else if (analyzedData.length < 2) {
+            await bot.sendMessage(chatId, "⁉ Not enough specific draw class data to analyze the rolling average CRS.");
             return
         }
 
@@ -519,13 +500,6 @@ bot.on('callback_query', async (query) => {
      * How do I use the FAQ Section?
      */
     if (query.data === "how") {
-        const subMenu = {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "⏪ Back to Main Menu", callback_data: "main_menu" }],
-                ]
-            }
-        };
         bot.sendMessage(chatId, "✅ Click on the menu buttons below to navigate through the FAQ sections. More resources will be added in the future. ", menuContainer.mainMenu);
     }
     /**

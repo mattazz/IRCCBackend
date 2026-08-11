@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import TelegramBot from 'node-telegram-bot-api';
-import dotenv from 'dotenv';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const admin_id = process.env.ADMIN_USER_ID;
 
 function logUserInteraction(bot, msg) {
@@ -44,14 +45,8 @@ function saveLogToFile(log) {
     // Save logs to a file
     const dateToday = new Date().toISOString().split('T')[0];
 
-    const logFilePath = path.join(__dirname, `user_interaction${dateToday}.log`)
+    let logFilePath = path.join(__dirname, `user_interaction_${dateToday}.log`)
     const logString = JSON.stringify(log) + '\n'; // NDJSON format
-
-
-    if (dateToday !== log.dateTime.toISOString().split('T')[0]) {
-        console.log('New day, creating new log file');
-        logFilePath = path.join(__dirname, `user_interaction_${dateToday}.log`);
-    }
 
 
     fs.appendFile(logFilePath, logString, (err) => {
@@ -63,10 +58,10 @@ function saveLogToFile(log) {
     });
 }
 
-function sendLogToPrimary(bot, admin_id = admin_id, log) {
+function sendLogToPrimary(bot, adminId = admin_id, log) {
 
     // Send log to primary user
-    const primaryChatId = admin_id;
+    const primaryChatId = adminId;
     if (primaryChatId) {
         bot.sendMessage(primaryChatId, JSON.stringify(log, null, 2));
     }
