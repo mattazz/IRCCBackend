@@ -84,6 +84,10 @@ The `n` most recent Express Entry draws (most recent first). `count` defaults to
 ]
 ```
 
+### `GET /api/v1/draws/all`
+
+The entire cached draw history (~435 rounds since 2015 as of writing), **not** capped, sorted chronologically (oldest → newest, unlike `/draws/latest`). Meant for client-side charting/analysis rather than a "recent draws" list — same response shape as `/draws/latest`.
+
 ### `GET /api/v1/draws/filter/:classCode`
 
 Draws matching a class filter code.

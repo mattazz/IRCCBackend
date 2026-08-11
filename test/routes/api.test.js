@@ -81,6 +81,14 @@ test('GET /api/v1/draws/latest ignores an invalid count and falls back to the de
     assert.equal(res.body.length, 3); // fixture only has 3, default is 5
 });
 
+test('GET /api/v1/draws/all returns the full history, chronologically sorted', async () => {
+    const res = await request(buildTestApp()).get('/api/v1/draws/all');
+    assert.equal(res.status, 200);
+    assert.equal(res.body.length, 3); // all 3 fixture draws, not capped
+    assert.equal(res.body[0].date, '2024-01-01'); // oldest first
+    assert.equal(res.body[2].date, '2024-03-01'); // newest last
+});
+
 test('GET /api/v1/draws/filter/:classCode returns filtered draws', async () => {
     const res = await request(buildTestApp()).get('/api/v1/draws/filter/CEC');
     assert.equal(res.status, 200);

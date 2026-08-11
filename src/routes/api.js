@@ -94,6 +94,16 @@ router.get('/draws/latest', (req, res) => {
     res.json(data.slice(0, count));
 });
 
+router.get('/draws/all', (req, res) => {
+    const { data } = dataCache.getDrawsCache();
+    if (!data) return sendJsonError(res, 503, 'Draws cache is still warming up, try again shortly');
+
+    // Chronological (oldest -> newest), same convention as /draws/rolling-average, since the
+    // main consumer of the full history is client-side charting rather than a "recent" list.
+    const chronologicalDraws = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+    res.json(chronologicalDraws);
+});
+
 router.get('/draws/filter/:classCode', (req, res) => {
     const { data } = dataCache.getDrawsCache();
     if (!data) return sendJsonError(res, 503, 'Draws cache is still warming up, try again shortly');
