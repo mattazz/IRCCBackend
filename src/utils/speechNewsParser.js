@@ -189,7 +189,7 @@ async function getStoredSpeechArticles() {
         // Uses the shared connection opened once at server startup (see mongoDBConnect.connectToDatabase
         // call in app.js) rather than opening/closing a connection per call.
         await mongoDBConnect.connectToDatabase();
-        const articles = await SpeechArticle.find({});
+        const articles = await SpeechArticle.find({}, { __v: 0 });
         return articles;
     } catch (error) {
         console.error(`Error during database connection: ${error}`);

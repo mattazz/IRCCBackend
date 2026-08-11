@@ -1,7 +1,7 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 
 import dataCache from '../utils/dataCache.js';
-import mongoDBConnect from '../utils/mongoDBConnect.js';
 import rssParser from '../utils/rssParser.js';
 import irccDrawScraper from '../utils/irccDrawScraper.js';
 import irccDrawAnalyzer from '../utils/irccDrawAnalyzer.js';
@@ -12,16 +12,30 @@ import httpResponse from '../utils/httpResponse.js';
 const { sendJsonError } = httpResponse;
 const router = express.Router();
 
-router.get('/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        database: mongoDBConnect.isConnected() ? 'connected' : 'disconnected',
-        cache: {
-            news: dataCache.getNewsCache().lastUpdated,
-            draws: dataCache.getDrawsCache().lastUpdated
-        }
-    });
-});
+const MAX_LIST_COUNT = 100;
+const MAX_KEYWORD_LENGTH = 100;
+
+/**
+ * Parses a "count"-style query param into a positive integer, falling back to
+ * defaultValue on anything invalid (missing, non-numeric, zero, negative) and
+ * capping at MAX_LIST_COUNT so a single request can't ask for an unbounded slice.
+ */
+function parsePositiveIntParam(value, defaultValue) {
+    const parsed = parseInt(value, 10);
+    if (!Number.isInteger(parsed) || parsed <= 0) return defaultValue;
+    return Math.min(parsed, MAX_LIST_COUNT);
+}
+
+// Public read-only API - throttle per IP to protect this server from abuse.
+// Health lives on its own unversioned router (src/routes/health.js), so it isn't
+// covered by this limiter or by the /v1 prefix.
+router.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' }
+}));
 
 /**
  * News
@@ -51,6 +65,7 @@ router.get('/news/search', (req, res) => {
 
     const keyword = req.query.q;
     if (!keyword) return sendJsonError(res, 400, 'Query parameter "q" is required, e.g. /api/news/search?q=Express+Entry');
+    if (keyword.length > MAX_KEYWORD_LENGTH) return sendJsonError(res, 400, `Query parameter "q" must be ${MAX_KEYWORD_LENGTH} characters or fewer`);
 
     res.json(rssParser.filterItemsByKeyword(data, keyword));
 });
@@ -75,7 +90,7 @@ router.get('/draws/latest', (req, res) => {
     const { data } = dataCache.getDrawsCache();
     if (!data) return sendJsonError(res, 503, 'Draws cache is still warming up, try again shortly');
 
-    const count = parseInt(req.query.count, 10) || 5;
+    const count = parsePositiveIntParam(req.query.count, 5);
     res.json(data.slice(0, count));
 });
 
@@ -125,7 +140,7 @@ router.get('/draws/rolling-average/:classCode', (req, res) => {
  */
 
 router.get('/speeches/latest', async (req, res) => {
-    const count = parseInt(req.query.count, 10) || 10;
+    const count = parsePositiveIntParam(req.query.count, 10);
     try {
         const articles = await speechNewsParser.getStoredSpeechArticles();
         res.json(articles.slice(0, count));

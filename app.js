@@ -13,12 +13,18 @@ import speechNewsParser from './src/utils/speechNewsParser.js';
 import mongoDBConnect from './src/utils/mongoDBConnect.js';
 import dataCache from './src/utils/dataCache.js';
 import apiRouter from './src/routes/api.js';
+import healthRouter from './src/routes/health.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express()
 app.use(bodyParser.json())
+
+// Deployed behind Heroku's router, so Express needs to trust the X-Forwarded-For header
+// it sets - otherwise req.ip (and anything keyed off it, like the /api rate limiter)
+// would see Heroku's proxy IP for every request instead of the real client IP.
+app.set('trust proxy', 1)
 
 /**
  * CORS: any localhost origin (any port) is always allowed, for local frontend dev.
@@ -60,7 +66,8 @@ app.get('/', (req, res) => {
     res.send('Hello, this is the IRCC News Bot server.');
 });
 
-app.use('/api', apiRouter);
+app.use('/api/health', healthRouter);
+app.use('/api/v1', apiRouter);
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);

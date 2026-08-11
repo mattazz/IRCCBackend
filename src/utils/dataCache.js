@@ -56,4 +56,14 @@ function getDrawsCache() {
     return drawsCache;
 }
 
-export default { startCacheRefresh, getNewsCache, getDrawsCache };
+/**
+ * Test-only seam: sets cache contents directly, without hitting IRCC. Lets route tests
+ * exercise /api/v1/news and /api/v1/draws against fixture data instead of the live network.
+ * Not called anywhere in application code.
+ */
+function _setCacheForTesting({ news, draws } = {}) {
+    if (news !== undefined) newsCache = { data: news, lastUpdated: new Date() };
+    if (draws !== undefined) drawsCache = { data: draws, lastUpdated: new Date() };
+}
+
+export default { startCacheRefresh, getNewsCache, getDrawsCache, _setCacheForTesting };

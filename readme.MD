@@ -1,6 +1,6 @@
 # IRCC News Bot 🤖🇨🇦
 
-A Telegram bot that delivers Immigration, Refugees and Citizenship Canada (IRCC) news, Express Entry draw results, and official speeches, backed by an Express webhook server.
+A Telegram bot that delivers Immigration, Refugees and Citizenship Canada (IRCC) news, Express Entry draw results, and official speeches, backed by an Express server. The same data is also available as a public read-only JSON API for a website frontend.
 
 ## Features
 
@@ -8,8 +8,9 @@ A Telegram bot that delivers Immigration, Refugees and Citizenship Canada (IRCC)
 - **Draws** — recent Express Entry draws, filterable by class, with a rolling-average CRS chart
 - **Speeches** — latest official speech announcements, scraped and stored in MongoDB
 - **FAQ** — interactive inline-keyboard menu covering Express Entry and Provincial Nominee Programs
+- **Public API** — `/api/v1/news/*`, `/api/v1/draws/*`, `/api/v1/speeches/*`, and `/api/health` — see [docs/API.md](docs/API.md)
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the pieces fit together.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the pieces fit together, and [docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md) for the API's build plan and design decisions.
 
 ## Bot Commands
 
@@ -47,7 +48,7 @@ Create a `.env` file in the project root:
 | `PORT` | Port the Express server listens on (defaults to `3000`) |
 | `MONGODB_URI` | Full MongoDB Atlas connection string (`mongodb+srv://user:password@host/telegram_bot?...`) for the database storing speech articles |
 | `ADMIN_USER_ID` | Telegram chat ID that receives interaction logs |
-| `FRONTEND_ORIGIN` | Comma-separated list of non-`localhost` origins allowed to call the `/api/*` routes (any `localhost` port is always allowed) |
+| `FRONTEND_ORIGIN` | Comma-separated list of non-`localhost` origins allowed to call the `/api/v1/*` routes (any `localhost` port is always allowed) |
 
 Run the server:
 
@@ -64,6 +65,14 @@ Telegram delivers updates via webhook, so the server must be reachable at `APP_U
 ```bash
 node src/utils/workerDBUpdater.js
 ```
+
+## Testing
+
+```bash
+npm test
+```
+
+Runs Node's built-in test runner over `test/` — unit tests for the pure data-filtering/validation logic, plus route-level tests for the `/api/v1/*` and `/api/health` endpoints. The Telegram bot's command handlers in `app.js` aren't covered by automated tests yet.
 
 ## Deployment
 
