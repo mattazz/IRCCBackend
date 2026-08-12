@@ -27,11 +27,15 @@ app.use(bodyParser.json())
 app.set('trust proxy', 1)
 
 /**
- * CORS: any localhost origin (any port) is always allowed, for local frontend dev.
+ * CORS: localhost and private-network origins (any port) are always allowed, for local
+ * frontend dev - including from a phone/other device on the same LAN, which shows up with
+ * the dev machine's private IP as its origin rather than localhost. Private IPs aren't
+ * publicly routable, so a request only carries one of these origins if the browser making it
+ * is itself on that private network - this doesn't open anything up to the public internet.
  * Non-local origins must be listed in FRONTEND_ORIGIN (comma-separated) - update that
  * env var once the frontend has a real domain (e.g. once it's staged on Heroku).
  */
-const localhostOriginRegex = /^https?:\/\/localhost(:\d+)?$/;
+const localDevOriginRegex = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(:\d+)?$/;
 const allowedOrigins = (process.env.FRONTEND_ORIGIN || '')
     .split(',')
     .map(origin => origin.trim())
@@ -40,7 +44,7 @@ const allowedOrigins = (process.env.FRONTEND_ORIGIN || '')
 app.use(cors({
     origin: (origin, callback) => {
         // No Origin header = non-browser request (curl, server-to-server, Telegram webhook) - always allow.
-        if (!origin || localhostOriginRegex.test(origin) || allowedOrigins.includes(origin)) {
+        if (!origin || localDevOriginRegex.test(origin) || allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
         return callback(new Error(`Origin ${origin} not allowed by CORS`));
