@@ -75,7 +75,7 @@ const parseDraws = async (max_draw = 5) => {
     
 }
 
-const classFilterMap = utils.classFilterMap;
+const classMatchKeywords = utils.classMatchKeywords;
 
 /**
  * Filters an already-fetched list of parsed draws by class filter code.
@@ -83,17 +83,18 @@ const classFilterMap = utils.classFilterMap;
  * dataCache-backed callers that already have parsed draws in memory.
  *
  * @param {Array} parsedDraws Draws as returned by parseDraws().
- * @param {string} filter Class filter code, e.g. "CEC" (see utils.classFilterMap).
+ * @param {string} filter Class filter code, e.g. "CEC" (see utils.classMatchKeywords).
  * @returns {[Array, Array]} [classFilteredDraws, subclassFilteredDraws]
  */
 const filterParsedDraws = (parsedDraws, filter) => {
     filter = filter.toUpperCase();
+    const keyword = (classMatchKeywords[filter] ?? '\0').toLowerCase();
 
-    let filteredDraws = parsedDraws.filter(draw => draw.class.includes(classFilterMap[filter]))
-    let subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]));
+    let filteredDraws = parsedDraws.filter(draw => draw.class.toLowerCase().includes(keyword))
+    let subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.toLowerCase().includes(keyword));
 
     if (filteredDraws.length < 10) {
-        subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.includes(classFilterMap[filter]))
+        subclassFilteredDraws = parsedDraws.filter(draw => draw.subclass.toLowerCase().includes(keyword))
     } else {
         subclassFilteredDraws = []
     }
