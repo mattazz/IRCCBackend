@@ -51,16 +51,19 @@ const parseDraws = async (max_draw = 5) => {
                 ? `https://www.canada.ca/en/immigration-refugees-citizenship/corporate/mandate/policies-operational-instructions-agreements/ministerial-instructions/express-entry-rounds/invitations.html?q=${draw.drawNumber}`
                 : '';
 
+            // dd1-dd17 map to 15 non-overlapping CRS score brackets covering 0-1200 (dd3 and
+            // dd9 are not part of that clean partition - they overlapped "451-500"/"401-450"
+            // with the real dd8/dd10 brackets and were dropped rather than guessed at, since
+            // every consumer of this field (CrsMatcherPage.tsx, PoolDistributionPage.tsx on the
+            // frontend) already reads exactly this set of 15 brackets).
             const poolDistribution = draw.dd18 ? {
                 "601-1200": draw.dd1 || "0",
                 "501-600": draw.dd2 || "0",
-                "451-500": draw.dd3 || "0",
                 "491-500": draw.dd4 || "0",
                 "481-490": draw.dd5 || "0",
                 "471-480": draw.dd6 || "0",
                 "461-470": draw.dd7 || "0",
                 "451-460": draw.dd8 || "0",
-                "401-450": draw.dd9 || "0",
                 "441-450": draw.dd10 || "0",
                 "431-440": draw.dd11 || "0",
                 "421-430": draw.dd12 || "0",

@@ -150,22 +150,33 @@ router.get('/draws/match', (req, res) => {
     const { data } = dataCache.getDrawsCache();
     if (!data) return sendJsonError(res, 503, 'Draws cache is still warming up, try again shortly');
 
-    const rawScore = req.query.score;
-    if (!rawScore) return sendJsonError(res, 400, 'Query parameter "score" is required (1-1200)');
-
-    const score = parseInt(rawScore, 10);
-    if (!Number.isInteger(score) || score < 1 || score > 1200) {
-        return sendJsonError(res, 400, 'Query parameter "score" must be an integer between 1 and 1200');
-    }
-
-    const classCode = req.query.classCode ? req.query.classCode.toUpperCase() : '';
-    if (classCode && !utils.classFilterMap[classCode]) {
-        return sendJsonError(res, 400, `Invalid class code. Valid codes: ${Object.keys(utils.classFilterMap).join(', ')}`);
-    }
-
-    const timeframeMonths = req.query.timeframeMonths !== undefined ? (isNaN(parseInt(req.query.timeframeMonths, 10)) ? 12 : Math.max(0, parseInt(req.query.timeframeMonths, 10))) : 12;
-
+    // Query params are parsed with req.query rather than req.params here, so a repeated key
+    // (e.g. ?classCode=A&classCode=B) comes through as an array instead of a string - normalize
+    // to the first value before calling string methods on it. The whole handler body is wrapped
+    // in try/catch so any unexpected input still goes through sendJsonError, per the "single
+    // place every route sends error responses from" convention in docs/ARCHITECTURE.md.
     try {
+        const rawScore = Array.isArray(req.query.score) ? req.query.score[0] : req.query.score;
+        if (!rawScore) return sendJsonError(res, 400, 'Query parameter "score" is required (1-1200)');
+
+        const score = parseInt(rawScore, 10);
+        if (!Number.isInteger(score) || score < 1 || score > 1200) {
+            return sendJsonError(res, 400, 'Query parameter "score" must be an integer between 1 and 1200');
+        }
+
+        const rawClassCode = Array.isArray(req.query.classCode) ? req.query.classCode[0] : req.query.classCode;
+        const classCode = rawClassCode ? String(rawClassCode).toUpperCase() : '';
+        if (classCode && !utils.classFilterMap[classCode]) {
+            return sendJsonError(res, 400, `Invalid class code. Valid codes: ${Object.keys(utils.classFilterMap).join(', ')}`);
+        }
+
+        const rawTimeframe = Array.isArray(req.query.timeframeMonths) ? req.query.timeframeMonths[0] : req.query.timeframeMonths;
+        const parsedTimeframe = parseInt(rawTimeframe, 10);
+        // Clamped to 1-120 per docs/API.md; 0 is the documented "all-time" escape hatch.
+        const timeframeMonths = rawTimeframe !== undefined && !isNaN(parsedTimeframe)
+            ? Math.min(120, Math.max(0, parsedTimeframe))
+            : 12;
+
         const result = irccDrawMatcher.calculateDrawMatch(data, score, classCode, timeframeMonths);
         res.json(result);
     } catch (err) {

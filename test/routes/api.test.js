@@ -133,3 +133,25 @@ test('GET /api/v1/draws/match validates missing/invalid score', async () => {
     const invalidRes = await request(buildTestApp()).get('/api/v1/draws/match?score=1500');
     assert.equal(invalidRes.status, 400);
 });
+
+test('GET /api/v1/draws/match does not crash on repeated query params (parsed as arrays)', async () => {
+    // Express/qs turns a repeated key like ?classCode=CEC&classCode=STEM into an array -
+    // the handler must not call string methods on it directly (regression test for a
+    // TypeError that previously escaped this route's try/catch and skipped sendJsonError).
+    const res = await request(buildTestApp()).get('/api/v1/draws/match?score=505&score=999&classCode=CEC&classCode=STEM&timeframeMonths=0&timeframeMonths=6');
+    assert.equal(res.status, 200);
+    assert.equal(res.body.userScore, 505);
+    assert.equal(res.body.classCode, 'CEC');
+    assert.equal(res.body.timeframeMonths, 0);
+    assert.equal(res.headers['content-type'].includes('application/json'), true);
+});
+
+test('GET /api/v1/draws/match clamps timeframeMonths to the documented 1-120 range', async () => {
+    const tooLarge = await request(buildTestApp()).get('/api/v1/draws/match?score=505&classCode=CEC&timeframeMonths=99999');
+    assert.equal(tooLarge.status, 200);
+    assert.equal(tooLarge.body.timeframeMonths, 120);
+
+    const negative = await request(buildTestApp()).get('/api/v1/draws/match?score=505&classCode=CEC&timeframeMonths=-50');
+    assert.equal(negative.status, 200);
+    assert.equal(negative.body.timeframeMonths, 0);
+});
