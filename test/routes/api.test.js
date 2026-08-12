@@ -114,3 +114,22 @@ test('GET /api/v1/draws/rolling-average/:classCode with an invalid code returns 
     const res = await request(buildTestApp()).get('/api/v1/draws/rolling-average/ZZZ');
     assert.equal(res.status, 400);
 });
+
+test('GET /api/v1/draws/match returns calculateDrawMatch analytics', async () => {
+    const res = await request(buildTestApp()).get('/api/v1/draws/match?score=505&classCode=CEC&timeframeMonths=0');
+    assert.equal(res.status, 200);
+    assert.equal(res.body.userScore, 505);
+    assert.equal(res.body.classCode, 'CEC');
+    assert.equal(res.body.totalDraws, 2);
+    assert.equal(res.body.qualifyingDrawsCount, 2);
+    assert.equal(res.body.matchRatePercentage, 100);
+});
+
+test('GET /api/v1/draws/match validates missing/invalid score', async () => {
+    const missingRes = await request(buildTestApp()).get('/api/v1/draws/match');
+    assert.equal(missingRes.status, 400);
+    assert.ok(missingRes.body.error);
+
+    const invalidRes = await request(buildTestApp()).get('/api/v1/draws/match?score=1500');
+    assert.equal(invalidRes.status, 400);
+});

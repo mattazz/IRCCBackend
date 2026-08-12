@@ -120,6 +120,50 @@ Same class-code validation as above. Returns the filtered draws **sorted chronol
 
 `rollingAverage` is a 4-draw rolling window (see `irccDrawAnalyzer.analyzeCRSRollingAverage`) and will be an empty array if there are fewer than 4 matching draws.
 
+### `GET /api/v1/draws/match?score=<score>&classCode=<classCode>&timeframeMonths=<months>`
+
+Evaluates candidate CRS eligibility against historical draw cutoffs.
+
+* **`score`**: Required integer between `1` and `1200`. Returns `400` if missing or out of bounds.
+* **`classCode`**: Optional filter code (e.g. `CEC`, `STEM`). Returns `400` if invalid code supplied.
+* **`timeframeMonths`**: Optional timeframe window in months (`1`–`120`, or `0` for all-time). Defaults to `12`.
+
+```json
+{
+  "userScore": 508,
+  "classCode": "CEC",
+  "className": "Canadian Experience Class",
+  "timeframeMonths": 12,
+  "totalDraws": 10,
+  "qualifyingDrawsCount": 6,
+  "matchRatePercentage": 60,
+  "chanceLevel": "Moderate",
+  "latestCutoff": 520,
+  "averageCutoff": 512,
+  "minCutoff": 495,
+  "maxCutoff": 525,
+  "scoreGapLatest": -12,
+  "scoreGapAverage": -4,
+  "percentileRank": 65,
+  "recommendations": {
+    "pointsToLatest": 12,
+    "pointsToAverage": 4,
+    "pointsTo75thPercentile": 15
+  },
+  "draws": [
+    {
+      "drawNumber": "310",
+      "date": "July 15, 2024",
+      "crs": "520",
+      "class": "Canadian Experience Class",
+      "drawSize": "3,000",
+      "qualified": false,
+      "gap": -12
+    }
+  ]
+}
+```
+
 ## Speeches
 
 ### `GET /api/v1/speeches/latest?count=<n>`

@@ -53,8 +53,9 @@ workerDBUpdater.js (standalone script, run on a schedule, not imported by app.js
 | `src/utils/httpResponse.js` | `sendJsonError(res, status, message)` — the single place every route sends error responses from, so none of them can accidentally leak a stack trace or raw exception message |
 | `src/middleware/logger.js` | Logs each user interaction to console (and admin DM via `sendLogToPrimary`); `saveLogToFile` writes NDJSON logs to disk but isn't currently wired into any handler |
 | `src/utils/rssParser.js` | Fetches the IRCC news RSS feed, plus pure filter functions (`filterItemsByMonth`, `filterItemsByKeyword`) shared by both the bot (live-fetch then filter) and the API (filters the cache) |
-| `src/utils/irccDrawScraper.js` | Fetches/parses the IRCC Express Entry draw JSON, plus a pure `filterParsedDraws` shared the same way |
+| `src/utils/irccDrawScraper.js` | Fetches/parses the IRCC Express Entry draw JSON (enriched with official URL, tie-breaking timestamp, draw time, and pool distribution), plus a pure `filterParsedDraws` shared the same way |
 | `src/utils/irccDrawAnalyzer.js` | Computes a rolling-average CRS from parsed draw data |
+| `src/utils/irccDrawMatcher.js` | Computes candidate CRS score eligibility, ITA match rates, percentile ranks, cutoff gaps, and score recommendations against draw history |
 | `src/utils/chartGenerator.js` | Renders the rolling-average CRS as a line chart image (via `chartjs-to-image`) — **bot-only**, the API returns raw JSON data points instead (see API.md) |
 | `src/utils/speechNewsParser.js` | Puppeteer scraper for IRCC speech news; reads/writes the MongoDB `tg_speech_articles` collection |
 | `src/utils/mongoDBConnect.js` | Shared `connectToDatabase`/`closeDatabaseConnection`/`isConnected` helpers, reading the full connection string from `MONGODB_URI`. All DB access should go through this module rather than calling `mongoose.connect` directly. `app.js` connects once at startup and keeps the connection alive for the process lifetime (routes don't open/close per request) |

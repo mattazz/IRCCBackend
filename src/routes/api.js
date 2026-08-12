@@ -5,6 +5,7 @@ import dataCache from '../utils/dataCache.js';
 import rssParser from '../utils/rssParser.js';
 import irccDrawScraper from '../utils/irccDrawScraper.js';
 import irccDrawAnalyzer from '../utils/irccDrawAnalyzer.js';
+import irccDrawMatcher from '../utils/irccDrawMatcher.js';
 import speechNewsParser from '../utils/speechNewsParser.js';
 import utils from '../utils/utils.js';
 import httpResponse from '../utils/httpResponse.js';
@@ -143,6 +144,33 @@ router.get('/draws/rolling-average/:classCode', (req, res) => {
         draws: chronologicalDraws,
         rollingAverage
     });
+});
+
+router.get('/draws/match', (req, res) => {
+    const { data } = dataCache.getDrawsCache();
+    if (!data) return sendJsonError(res, 503, 'Draws cache is still warming up, try again shortly');
+
+    const rawScore = req.query.score;
+    if (!rawScore) return sendJsonError(res, 400, 'Query parameter "score" is required (1-1200)');
+
+    const score = parseInt(rawScore, 10);
+    if (!Number.isInteger(score) || score < 1 || score > 1200) {
+        return sendJsonError(res, 400, 'Query parameter "score" must be an integer between 1 and 1200');
+    }
+
+    const classCode = req.query.classCode ? req.query.classCode.toUpperCase() : '';
+    if (classCode && !utils.classFilterMap[classCode]) {
+        return sendJsonError(res, 400, `Invalid class code. Valid codes: ${Object.keys(utils.classFilterMap).join(', ')}`);
+    }
+
+    const timeframeMonths = req.query.timeframeMonths !== undefined ? (isNaN(parseInt(req.query.timeframeMonths, 10)) ? 12 : Math.max(0, parseInt(req.query.timeframeMonths, 10))) : 12;
+
+    try {
+        const result = irccDrawMatcher.calculateDrawMatch(data, score, classCode, timeframeMonths);
+        res.json(result);
+    } catch (err) {
+        sendJsonError(res, 400, err.message || 'Error processing draw match');
+    }
 });
 
 /**

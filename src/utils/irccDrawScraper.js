@@ -47,13 +47,43 @@ const parseDraws = async (max_draw = 5) => {
                 continue
             }
             
+            const officialUrl = draw.drawNumber
+                ? `https://www.canada.ca/en/immigration-refugees-citizenship/corporate/mandate/policies-operational-instructions-agreements/ministerial-instructions/express-entry-rounds/invitations.html?q=${draw.drawNumber}`
+                : '';
+
+            const poolDistribution = draw.dd18 ? {
+                "601-1200": draw.dd1 || "0",
+                "501-600": draw.dd2 || "0",
+                "451-500": draw.dd3 || "0",
+                "491-500": draw.dd4 || "0",
+                "481-490": draw.dd5 || "0",
+                "471-480": draw.dd6 || "0",
+                "461-470": draw.dd7 || "0",
+                "451-460": draw.dd8 || "0",
+                "401-450": draw.dd9 || "0",
+                "441-450": draw.dd10 || "0",
+                "431-440": draw.dd11 || "0",
+                "421-430": draw.dd12 || "0",
+                "411-420": draw.dd13 || "0",
+                "401-410": draw.dd14 || "0",
+                "351-400": draw.dd15 || "0",
+                "301-350": draw.dd16 || "0",
+                "0-300": draw.dd17 || "0",
+            } : null;
+
             parsedDrawArray.push({
                 "date": draw.drawDate,
                 "drawNumber": draw.drawNumber,
                 "crs": draw.drawCRS,
                 "class": draw.drawName,
-                "subclass": draw.drawText2,
+                "subclass": draw.drawText2 || '',
                 "drawSize": draw.drawSize,
+                "url": officialUrl,
+                "tieBreakingRule": draw.drawCutOff || '',
+                "drawDateTime": draw.drawDateTime || '',
+                "poolDistributionAsOn": draw.drawDistributionAsOn || '',
+                "poolTotal": draw.dd18 || '',
+                "poolDistribution": poolDistribution,
             })
     
         }
